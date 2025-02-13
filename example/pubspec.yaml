@@ -1,0 +1,12 @@
+name: flexi_formatter_example
+version: 0.0.1
+description: Example app for the flexi_formatter package.
+homepage: https://github.com/FlexiKline/flexi_formatter
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flexi_formatter:
+    path: ../
