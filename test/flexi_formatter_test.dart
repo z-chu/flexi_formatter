@@ -24,14 +24,14 @@ void main() {
   });
 
   test('test formatPercentage', () {
-    var result = formatPercentage(0.1, cutInvalidZero: false);
+    var result = formatPercentage(0.1.d, cutInvalidZero: false);
     expect(result, "10.00%");
-    result = formatPercentage(0.1, cutInvalidZero: true);
+    result = formatPercentage(0.1.d, cutInvalidZero: true);
     expect(result, "10%");
 
-    result = formatPercentage(0.98765, cutInvalidZero: false);
+    result = formatPercentage(0.98765.d, cutInvalidZero: false);
     expect(result, "98.76%");
-    result = formatPercentage(0.98765, cutInvalidZero: true);
+    result = formatPercentage(0.98765.d, cutInvalidZero: true);
     expect(result, "98.76%");
   });
 
@@ -54,6 +54,13 @@ void main() {
 
     result = formatAmount(123456789.d, precision: 3);
     expect(result, "123.457M");
+
+    result = formatAmount(
+      123456789.d,
+      precision: 3,
+      compactConverter: FormatDecimal.simplifiedChineseCompactConverter,
+    );
+    expect(result, "1.235亿");
   });
 
   test('test formatNumber', () {

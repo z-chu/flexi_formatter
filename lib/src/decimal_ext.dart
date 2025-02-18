@@ -17,25 +17,7 @@ part of 'decimal_format_util.dart';
 // 默认Decimal除法精度
 const int defaultScaleOnInfinitePrecision = 17;
 
-enum ThousandUnit {
-  /// trillion
-  trillion('T'),
-
-  /// billion
-  billion('B'),
-
-  /// million
-  million('M'),
-
-  /// thousand
-  thousand('K'),
-
-  /// less than thousand
-  less('');
-
-  final String value;
-  const ThousandUnit(this.value);
-}
+typedef CompactConverter = (Decimal, String) Function(Decimal);
 
 enum RoundMode {
   round,
@@ -47,6 +29,8 @@ enum RoundMode {
 extension StringExt on String {
   Decimal? get decimal => Decimal.tryParse(this);
   Decimal get d => Decimal.tryParse(this) ?? Decimal.zero;
+
+  String get cleanedString => cleaned;
 
   /// https://unicode.org/reports/tr9/
   /// 从左到右嵌入
@@ -102,8 +86,19 @@ extension FormatDecimal on Decimal {
   /// Global configuration for xThousand formatting default [thousandSeparator].
   static String thousandSeparator = ',';
 
-  /// Global configuration for thousand formatting default unit [thousandUnitBuilder].
-  static String Function(ThousandUnit) thousandUnitBuilder = (ThousandUnit unit) => unit.value;
+  /// Global configuration for compact formatting. if null, The [defaultCompactConverter] will be used
+  static CompactConverter? globalCompactConverter;
+
+  /// Default compact conversion
+  static (Decimal, String) defaultCompactConverter(Decimal value) => value.toThousandCompact;
+
+  /// Simplified Chinese compact conversion
+  static (Decimal, String) simplifiedChineseCompactConverter(Decimal value) =>
+      value.toSimplifiedChineseCompact;
+
+  /// Traditional Chinese compact conversion
+  static (Decimal, String) traditionalChineseCompactConverter(Decimal value) =>
+      value.toTraditionalChineseCompact;
 
   /// Global configuration for displayed as the minimum boundary value of the exponent.
   static Decimal exponentMinDecimal = Decimal.ten.pow(-15).toDecimal();
@@ -113,17 +108,18 @@ extension FormatDecimal on Decimal {
 
   /// Format this number with thousands separators
   /// If [precision] is not specified, it defaults to 3.
-  String compact({
-    int precision = 3,
+  (String, String) compact({
+    int precision = 2,
     bool isClean = true,
-    String Function(ThousandUnit)? builder,
+    RoundMode? mode,
+    CompactConverter? converter,
   }) {
-    final (value, unit) = toCompact;
+    converter ??= globalCompactConverter ?? defaultCompactConverter;
+    var (value, unit) = converter(this);
+    if (mode != null) value = value.toRoundMode(mode, scale: precision);
     String result = value.toStringAsFixed(precision);
     if (isClean) result = result.cleaned;
-    final suffix = (builder ?? thousandUnitBuilder)(unit);
-
-    return '$result$suffix';
+    return (result, unit);
   }
 
   /// use [RoundMode] to handling Decimal
@@ -182,14 +178,11 @@ extension FormatDecimal on Decimal {
     bool isClean = true,
     String? separator,
   }) {
-    String result = formatAsString(
+    return formatAsString(
       precision,
       mode: mode,
       isClean: isClean,
-    ).thousands(
-      separator ?? thousandSeparator,
-    );
-    return result;
+    ).thousands(separator ?? thousandSeparator);
   }
 }
 
@@ -199,38 +192,98 @@ extension on Decimal {
   static final millionDecimal = Decimal.ten.pow(6).toDecimal();
   static final thousandDecimal = Decimal.ten.pow(3).toDecimal();
 
-  (Decimal, ThousandUnit) get toCompact {
+  (Decimal, String) get toThousandCompact {
     final val = abs();
     if (val >= trillionDecimal) {
       return (
         (this / trillionDecimal).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
-        ThousandUnit.trillion,
+        'T',
       );
     } else if (val >= billionDecimal) {
       return (
         (this / billionDecimal).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
-        ThousandUnit.billion,
+        'B',
       );
     } else if (val >= millionDecimal) {
       return (
         (this / millionDecimal).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
-        ThousandUnit.million,
+        'M',
       );
     } else if (val >= thousandDecimal) {
       return (
         (this / thousandDecimal).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
-        ThousandUnit.thousand,
+        'K',
       );
     } else {
-      return (this, ThousandUnit.less);
+      return (this, '');
+    }
+  }
+
+  static final hundredBillionDecimal = Decimal.ten.pow(12).toDecimal();
+  static final hundredMillionDecimal = Decimal.ten.pow(8).toDecimal();
+  static final tenThousandDecimal = Decimal.ten.pow(4).toDecimal();
+
+  (Decimal, String) get toSimplifiedChineseCompact {
+    final val = abs();
+    if (val > hundredBillionDecimal) {
+      return (
+        (this / hundredBillionDecimal).toDecimal(
+          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+        ),
+        '兆',
+      );
+    } else if (val > hundredMillionDecimal) {
+      return (
+        (this / hundredMillionDecimal).toDecimal(
+          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+        ),
+        '亿',
+      );
+    } else if (val > tenThousandDecimal) {
+      return (
+        (this / tenThousandDecimal).toDecimal(
+          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+        ),
+        '万',
+      );
+    } else {
+      return (this, '');
+    }
+  }
+
+  (Decimal, String) get toTraditionalChineseCompact {
+    final val = abs();
+    if (val > hundredBillionDecimal) {
+      return (
+        (this / hundredBillionDecimal).toDecimal(
+          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+        ),
+        '兆',
+      );
+    } else if (val > hundredMillionDecimal) {
+      return (
+        (this / hundredMillionDecimal).toDecimal(
+          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+        ),
+        '億',
+      );
+    } else if (val > tenThousandDecimal) {
+      return (
+        (this / tenThousandDecimal).toDecimal(
+          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+        ),
+        '萬',
+      );
+    } else {
+      return (this, '');
     }
   }
 }

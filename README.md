@@ -1,6 +1,6 @@
 # FlexiFormatter
 
-[![Build Status](https://github.com/FlexiKline/flexi_formatter/actions/workflows/dart.yml/badge.svg)](https://github.com/FlexiKline/flexi_formatter/actions/workflows/dart.yml)
+[![Build Status](https://github.com/FlexiKline/flexi_formatter/actions/workflows/publish.yml/badge.svg)](https://github.com/FlexiKline/flexi_formatter/actions/workflows/publish.yml)
 
 
 A flexible and customizable Dart/Flutter library for formatting numbers, dates, and other data types.
@@ -16,6 +16,12 @@ print(formatPrice(1234567890.12345.d, precision: 2, prefix: '\$'));
 
 /// 9876543210.1 => '9.88B'
 print(formatAmount(9876543210.1.d));
+
+/// 9876543210.1 => '98.77亿'
+print(formatAmount(
+  9876543210.1.d,
+  compactConverter: FormatDecimal.simplifiedChineseCompactConverter,
+));
 ```
 
 ## Usage

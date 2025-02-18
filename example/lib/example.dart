@@ -13,13 +13,19 @@ void main() {
   ));
 
   /// 0.1 => '10.00%'
-  print(formatPercentage(0.1));
+  print(formatPercentage(0.1.d));
 
   /// 1234567890.12345 => '$1,234,567,890.12'
   print(formatPrice(1234567890.12345.d, precision: 2, prefix: '\$'));
 
   /// 9876543210.1 => '9.88B'
   print(formatAmount(9876543210.1.d));
+
+  /// 9876543210.1 => '98.77亿'
+  print(formatAmount(
+    9876543210.1.d,
+    compactConverter: FormatDecimal.simplifiedChineseCompactConverter,
+  ));
 
   /// 123456.000000789 => '$+123 456.0{6}789USDT'
   FormatDecimal.thousandSeparator = ' ';
