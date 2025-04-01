@@ -19,13 +19,14 @@ part 'decimal_ext.dart';
 String formatNumber(
   Decimal? val, {
   int precision = 0, // 展示精度
-  bool showSign = false, //是否展示符号位+
+  bool showSign = false, // 是否展示符号位+
   RoundMode? mode,
-  bool cutInvalidZero = false, //删除尾部零
+  bool cutInvalidZero = false, // 删除尾部零
   bool showCompact = false, // 是否使用精简转换器转换大数展示, 优先于千分位展示
   CompactConverter? compactConverter, // 自定义精简转换器
   bool showThousands = false, // 是否千分位展示; 优先于正常精度展示
-  bool useZeroPadding = false, // 是否使用0来填充小数部分. 例如0.0000123=>0.0{4}123
+  ShrinkZeroMode? shrinkZeroMode, // 小数部分多零情况下, 进行收缩展示模式.
+  UnicodeDirection? direction, // 如果不为空, 则对结果进行ltr或rtl
   String prefix = '', // 前缀
   String suffix = '', // 后缀
   String? defIfZero, // 如果为0时的默认展示
@@ -45,6 +46,7 @@ String formatNumber(
   if (showCompact) {
     final (result, unit) = val.compact(
       precision: precision,
+      mode: mode,
       isClean: cutInvalidZero,
       converter: compactConverter,
     );
@@ -56,11 +58,16 @@ String formatNumber(
     ret = val.formatAsString(precision, mode: mode, isClean: cutInvalidZero);
   }
 
-  if (useZeroPadding) {
-    ret = ret.zeroPadding;
+  if (shrinkZeroMode != null) {
+    ret = ret.shrinkZero(shrinkZeroMode);
   }
 
-  return '$prefix$ret$suffix';
+  ret = '$prefix$ret$suffix';
+  return switch (direction) {
+    UnicodeDirection.ltr => ret.ltr,
+    UnicodeDirection.rtl => ret.rtl,
+    _ => ret
+  };
 }
 
 /// 百分比
@@ -70,6 +77,7 @@ String formatPercentage(
   bool showSign = false,
   RoundMode mode = RoundMode.floor,
   bool cutInvalidZero = false,
+  UnicodeDirection? direction,
   String suffix = '%',
   String defIfNull = '-%', // 如果为空或无效值时的默认展示.
 }) {
@@ -80,6 +88,7 @@ String formatPercentage(
     mode: mode,
     showSign: showSign,
     cutInvalidZero: cutInvalidZero,
+    direction: direction,
     suffix: suffix,
     defIfNull: defIfNull,
   );
@@ -92,10 +101,11 @@ String formatPrice(
   RoundMode mode = RoundMode.floor,
   bool cutInvalidZero = true,
   bool showThousands = true,
-  bool useZeroPadding = true,
+  ShrinkZeroMode? shrinkZeroMode,
   String prefix = '',
   String suffix = '',
   String? defIfZero,
+  String defIfNull = '--',
 }) {
   return formatNumber(
     val,
@@ -103,10 +113,11 @@ String formatPrice(
     mode: mode,
     cutInvalidZero: cutInvalidZero,
     showThousands: showThousands,
-    useZeroPadding: useZeroPadding,
+    shrinkZeroMode: shrinkZeroMode,
     prefix: prefix,
     suffix: suffix,
     defIfZero: defIfZero,
+    defIfNull: defIfNull,
   );
 }
 
@@ -118,10 +129,11 @@ String formatAmount(
   bool showCompact = true,
   CompactConverter? compactConverter,
   bool cutInvalidZero = true,
-  bool useZeroPadding = false,
+  ShrinkZeroMode? shrinkZeroMode,
   String prefix = '',
   String suffix = '',
   String? defIfZero,
+  String defIfNull = '--',
 }) {
   return formatNumber(
     val,
@@ -130,9 +142,10 @@ String formatAmount(
     showCompact: showCompact,
     compactConverter: compactConverter,
     cutInvalidZero: cutInvalidZero,
-    useZeroPadding: useZeroPadding,
+    shrinkZeroMode: shrinkZeroMode,
     prefix: prefix,
     suffix: suffix,
     defIfZero: defIfZero,
+    defIfNull: defIfNull,
   );
 }

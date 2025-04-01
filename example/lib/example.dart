@@ -9,7 +9,7 @@ void main() {
     1.00000123000.d,
     precision: 10,
     cutInvalidZero: true,
-    useZeroPadding: true,
+    shrinkZeroMode: ShrinkZeroMode.compact,
   ));
 
   /// 0.1 => '10.00%'
@@ -27,14 +27,14 @@ void main() {
     compactConverter: FormatDecimal.simplifiedChineseCompactConverter,
   ));
 
-  /// 123456.000000789 => '$+123 456.0{6}789USDT'
+  /// 123456.000000789 => '$+123 456.0₆789USDT'
   FormatDecimal.thousandSeparator = ' ';
   print(formatNumber(
     123456.000000789.d,
     precision: 100,
     cutInvalidZero: true,
     showThousands: true,
-    useZeroPadding: true,
+    shrinkZeroMode: ShrinkZeroMode.subscript,
     prefix: '\$',
     suffix: 'USDT',
     showSign: true,

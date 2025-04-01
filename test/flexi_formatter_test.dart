@@ -18,7 +18,7 @@ void main() {
         str.d,
         precision: 10,
         cutInvalidZero: true,
-        useZeroPadding: true,
+        shrinkZeroMode: ShrinkZeroMode.compact,
       )}');
     }
   });
@@ -70,11 +70,12 @@ void main() {
       precision: 100,
       cutInvalidZero: true,
       showThousands: true,
-      useZeroPadding: true,
+      shrinkZeroMode: ShrinkZeroMode.subscript,
       prefix: '\$',
       suffix: 'USDT',
       showSign: true,
     );
-    expect(result, "\$+123 456.0{6}789USDT");
+    print(result);
+    expect(result, "\$+123 456.0₆789USDT");
   });
 }

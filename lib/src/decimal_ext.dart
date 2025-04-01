@@ -14,6 +14,20 @@
 
 part of 'decimal_format_util.dart';
 
+// 上角标的数字符号12345⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻
+const superscriptNumerals = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+
+// 上角标的正负号
+const superscriptPositive = '⁺';
+const superscriptNegative = '⁻';
+
+// 下角标的数字符号12345₀₁₂₃₄₅₆₇₈₉₊₋
+const subscriptNumerals = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉'];
+
+// 下角标的正负号
+const subscriptPositive = '₊';
+const subscriptNegative = '₋';
+
 // 默认Decimal除法精度
 const int defaultScaleOnInfinitePrecision = 17;
 
@@ -24,6 +38,17 @@ enum RoundMode {
   floor,
   ceil,
   truncate,
+}
+
+enum UnicodeDirection {
+  ltr,
+  rtl;
+}
+
+enum ShrinkZeroMode {
+  compact, // 0.0000123=>0.0{4}123
+  subscript, // 0.0000123=>0.0₄123
+  superscript; // 0.0000123=>0.0⁴123
 }
 
 extension StringExt on String {
@@ -53,6 +78,28 @@ extension DoubleExt on double {
 extension IntExt on int {
   Decimal get decimal => d;
   Decimal get d => Decimal.fromInt(this);
+
+  /// 将数字转换为下角标形式字符展示.
+  String get subscriptNumeral {
+    if (isNaN) return '';
+    final buffer = StringBuffer(sign < 0 ? subscriptNegative : '');
+    final zeroCodeUnits = '0'.codeUnitAt(0);
+    for (int unit in abs().toString().codeUnits) {
+      buffer.write(subscriptNumerals[unit - zeroCodeUnits]);
+    }
+    return buffer.toString();
+  }
+
+  /// 将数字转换为上角标形式字符展示.
+  String get superscriptNumeral {
+    if (isNaN) return '';
+    final buffer = StringBuffer(sign < 0 ? subscriptNegative : '');
+    final zeroCodeUnits = '0'.codeUnitAt(0);
+    for (int unit in abs().toString().codeUnits) {
+      buffer.write(superscriptNumerals[unit - zeroCodeUnits]);
+    }
+    return buffer.toString();
+  }
 }
 
 final Decimal two = Decimal.fromInt(2);
@@ -319,7 +366,7 @@ extension on String {
     return formattedInteger + decimalPart;
   }
 
-  String get zeroPadding {
+  String shrinkZero(ShrinkZeroMode mode) {
     final dotIndex = lastIndexOf(FormatDecimal.decimalSeparator);
     if (dotIndex == -1) return this;
 
@@ -327,7 +374,14 @@ extension on String {
     final regex = RegExp(r'(0{4,})(?=[1-9]|$)');
     final formattedDecimal = decimalPart.replaceAllMapped(
       regex,
-      (Match match) => '0{${match[1]!.length}}',
+      (Match match) {
+        final zeroLen = match[1]!.length;
+        return switch (mode) {
+          ShrinkZeroMode.compact => '0{$zeroLen}',
+          ShrinkZeroMode.subscript => '0${zeroLen.subscriptNumeral}',
+          ShrinkZeroMode.superscript => '0${zeroLen.superscriptNumeral}'
+        };
+      },
     );
 
     return '${substring(0, dotIndex)}${FormatDecimal.decimalSeparator}$formattedDecimal';
