@@ -44,7 +44,12 @@ void main() {
     result = formatPrice(123456.789.d, precision: 2, prefix: '\$');
     expect(result, "\$123,456.78");
 
-    result = formatPrice(123456.000000789.d, precision: 9, prefix: '\$');
+    result = formatPrice(
+      123456.000000789.d,
+      precision: 9,
+      prefix: '\$',
+      shrinkZeroMode: ShrinkZeroMode.compact,
+    );
     expect(result, "\$123,456.0{6}789");
   });
 
