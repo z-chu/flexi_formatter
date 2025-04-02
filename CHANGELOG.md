@@ -1,3 +1,8 @@
+## 1.3.0
+- Support custom grouping.
+- Add global configuration.
+- Optimize code.
+
 ## 1.2.0
 - Support Shrink Zero mode.
 - Optimize code.

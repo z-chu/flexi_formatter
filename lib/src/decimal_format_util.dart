@@ -14,18 +14,22 @@
 
 import 'package:decimal/decimal.dart';
 
+part 'formatter_config.dart';
 part 'decimal_ext.dart';
 
 String formatNumber(
   Decimal? val, {
   int precision = 0, // 展示精度
   bool showSign = false, // 是否展示符号位+
-  RoundMode? mode,
+  RoundMode? roundMode,
   bool cutInvalidZero = false, // 删除尾部零
-  bool showCompact = false, // 是否使用精简转换器转换大数展示, 优先于千分位展示
-  CompactConverter? compactConverter, // 自定义精简转换器
-  bool showThousands = false, // 是否千分位展示; 优先于正常精度展示
+  bool enableCompact = false, // 是否启用精简转换器转换大数展示, 优先于千分位展示
+  CompactConverter? compactConverter, // 自定义整数部分的精简转换器
+  bool enableGrouping = false, // 是否启用分组, 主要是针对千分位展示.
+  String? groupSepartor, // 定制分组分隔符, 默认','.
+  int? groupCounts, // 定制分组数量, 默认3.
   ShrinkZeroMode? shrinkZeroMode, // 小数部分多零情况下, 进行收缩展示模式.
+  ShrinkZeroConverter? shrinkZeroConverter, // 自定义多零收缩转换器.
   UnicodeDirection? direction, // 如果不为空, 则对结果进行ltr或rtl
   String prefix = '', // 前缀
   String suffix = '', // 后缀
@@ -33,59 +37,74 @@ String formatNumber(
   String defIfNull = '--', // 如果为空或无效值时的默认展示
 }) {
   // 处理数据为空的情况
-  if (val == null) return defIfNull;
+  if (val == null) {
+    return '$prefix$defIfNull$suffix'.unicodeDirection(direction);
+  }
 
   // 处理数据为0的情况
   if (val == Decimal.zero && defIfZero != null) {
-    return defIfZero;
+    return '$prefix$defIfZero$suffix'.unicodeDirection(direction);
   }
 
   if (showSign && val >= Decimal.zero) prefix += '+';
 
   String ret;
-  if (showCompact) {
-    final (result, unit) = val.compact(
+  if (enableCompact) {
+    final (result, unit) = val._compact(
       precision: precision,
-      mode: mode,
+      roundMode: roundMode,
       isClean: cutInvalidZero,
       converter: compactConverter,
     );
-    ret = result;
-    suffix += unit;
-  } else if (showThousands) {
-    ret = val.thousands(precision, mode: mode, isClean: cutInvalidZero);
+    ret = result.shrinkZero(
+      shrinkMode: shrinkZeroMode,
+      shrinkConverter: shrinkZeroConverter,
+    );
+    suffix = unit + suffix;
+  } else if (enableGrouping) {
+    var (integerPart, decimalPart) = val._group(
+      precision,
+      roundMode: roundMode,
+      isClean: cutInvalidZero,
+      groupCounts: groupCounts,
+      groupSeparator: groupSepartor,
+    );
+    decimalPart = decimalPart.shrinkZero(
+      shrinkMode: shrinkZeroMode,
+      shrinkConverter: shrinkZeroConverter,
+    );
+    ret = integerPart + decimalPart;
   } else {
-    ret = val.formatAsString(precision, mode: mode, isClean: cutInvalidZero);
+    ret = val.formatAsString(
+      precision,
+      roundMode: roundMode,
+      isClean: cutInvalidZero,
+    );
+    ret = ret.shrinkZero(
+      shrinkMode: shrinkZeroMode,
+      shrinkConverter: shrinkZeroConverter,
+    );
   }
 
-  if (shrinkZeroMode != null) {
-    ret = ret.shrinkZero(shrinkZeroMode);
-  }
-
-  ret = '$prefix$ret$suffix';
-  return switch (direction) {
-    UnicodeDirection.ltr => ret.ltr,
-    UnicodeDirection.rtl => ret.rtl,
-    _ => ret
-  };
+  return '$prefix$ret$suffix'.unicodeDirection(direction);
 }
 
 /// 百分比
 String formatPercentage(
   Decimal? val, {
+  bool expandHundred = true,
   int precision = 2,
   bool showSign = false,
-  RoundMode mode = RoundMode.floor,
+  RoundMode roundMode = RoundMode.floor,
   bool cutInvalidZero = false,
   UnicodeDirection? direction,
   String suffix = '%',
-  String defIfNull = '-%', // 如果为空或无效值时的默认展示.
+  String defIfNull = '--', // 如果为空或无效值时的默认展示.
 }) {
-  if (val == null) return defIfNull;
   return formatNumber(
-    val * hundred,
+    val == null ? null : (expandHundred ? val * hundred : val),
     precision: precision,
-    mode: mode,
+    roundMode: roundMode,
     showSign: showSign,
     cutInvalidZero: cutInvalidZero,
     direction: direction,
@@ -98,10 +117,13 @@ String formatPercentage(
 String formatPrice(
   Decimal? val, {
   int precision = 2,
-  RoundMode mode = RoundMode.floor,
+  bool showSign = false,
+  RoundMode roundMode = RoundMode.floor,
   bool cutInvalidZero = true,
-  bool showThousands = true,
+  bool enableGrouping = true,
   ShrinkZeroMode? shrinkZeroMode,
+  ShrinkZeroConverter? shrinkZeroConverter,
+  UnicodeDirection? direction,
   String prefix = '',
   String suffix = '',
   String? defIfZero,
@@ -110,10 +132,13 @@ String formatPrice(
   return formatNumber(
     val,
     precision: precision,
-    mode: mode,
+    showSign: showSign,
+    roundMode: roundMode,
     cutInvalidZero: cutInvalidZero,
-    showThousands: showThousands,
+    enableGrouping: enableGrouping,
     shrinkZeroMode: shrinkZeroMode,
+    shrinkZeroConverter: shrinkZeroConverter,
+    direction: direction,
     prefix: prefix,
     suffix: suffix,
     defIfZero: defIfZero,
@@ -125,11 +150,14 @@ String formatPrice(
 String formatAmount(
   Decimal? val, {
   int precision = 2,
-  RoundMode? mode,
-  bool showCompact = true,
+  bool showSign = false,
+  RoundMode? roundMode,
+  bool enableCompact = true,
   CompactConverter? compactConverter,
   bool cutInvalidZero = true,
   ShrinkZeroMode? shrinkZeroMode,
+  ShrinkZeroConverter? shrinkZeroConverter,
+  UnicodeDirection? direction,
   String prefix = '',
   String suffix = '',
   String? defIfZero,
@@ -138,11 +166,14 @@ String formatAmount(
   return formatNumber(
     val,
     precision: precision,
-    mode: mode,
-    showCompact: showCompact,
+    showSign: showSign,
+    roundMode: roundMode,
+    enableCompact: enableCompact,
     compactConverter: compactConverter,
     cutInvalidZero: cutInvalidZero,
     shrinkZeroMode: shrinkZeroMode,
+    shrinkZeroConverter: shrinkZeroConverter,
+    direction: direction,
     prefix: prefix,
     suffix: suffix,
     defIfZero: defIfZero,
