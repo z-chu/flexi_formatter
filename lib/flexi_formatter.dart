@@ -14,4 +14,4 @@
 
 library;
 
-export 'src/decimal_format_util.dart';
+export 'src/format_number_util.dart';

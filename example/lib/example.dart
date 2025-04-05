@@ -9,7 +9,7 @@ void main() {
     1.00000123000.d,
     precision: 10,
     cutInvalidZero: true,
-    shrinkZeroMode: ShrinkZeroMode.compact,
+    shrinkZeroMode: ShrinkZeroMode.curlyBraces,
   ));
 
   /// 0.1 => '10.00%'
@@ -47,7 +47,7 @@ void main() {
 
   /// 123456789.000000789 => '￥+1.2345.6789,0₆78元'
   try {
-    FlexiFormatter.setGlobalConfig(decimalSeparator: ',', groupSeparator: '.', groupCounts: 4);
+    FlexiFormatter.configureWith(decimalSeparator: ',', groupSeparator: '.', groupCounts: 4);
     print(formatNumber(
       '123456789.000000789'.d,
       precision: 8,
@@ -60,9 +60,31 @@ void main() {
       suffix: '元',
     ));
   } finally {
-    FlexiFormatter.restoreGlobalDefaultConfig();
+    FlexiFormatter.restoreDefaultConfig();
   }
 
-  print('￥+123456.0{6}789元'.ltr);
-  print('￥${'+123456.0{6}789'.ltr}元'.rtl);
+  print('>>>>Isolates>>>>');
+  print('￥+123456.0₆789元'.fsi); // ￥+123456.0₆789元
+  print('￥+123456.0₆789元'.lri); // ￥+123456.0₆789元
+  print('￥+123456.0₆789元'.rli); // 123456.0₆789元+￥
+
+  print('>>>>Embeddings>>>>');
+  print('￥+123456.0₆789元'.lre); // ￥+123456.0₆789元
+  print('￥+123456.0₆789元'.rle); // 123456.0₆789元+￥
+
+  print('>>>>Overrides>>>>');
+  print('￥+123456.0₆789元'.lro); // ￥+123456.0₆789元
+  print('￥+123456.0₆789元'.rlo); // 元987₆0.654321+￥
+
+  print('>>>> rtl directions');
+  // 阿拉伯语（RTL） + 英语（LTR）
+  print('مرحباHello world 1234!?'.rli);
+  print('مرحباHello world 1234!?'.rle);
+  print('مرحباHello world 1234!?'.rlo);
+
+  print('>>> rtl url');
+  print('مرحبا: ${'http://example.com'}'.rlo);
+  print('مرحبا: ${'http://example.com'.fsi}'.rlo);
+  print('مرحبا: ${uniLRI}http://example.com'.rle);
+  print('مرحبا: ${uniLRE}http://example.com'.rli);
 }

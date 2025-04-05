@@ -1,3 +1,8 @@
+## 1.4.0
+- Support unicode explicit directional(isolates, embeddings, overrides)
+- Managemnet global configuration.
+- Optimize code.
+
 ## 1.3.0
 - Support custom grouping.
 - Add global configuration.

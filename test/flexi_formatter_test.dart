@@ -18,7 +18,7 @@ void main() {
         str.d,
         precision: 10,
         cutInvalidZero: true,
-        shrinkZeroMode: ShrinkZeroMode.compact,
+        shrinkZeroMode: ShrinkZeroMode.curlyBraces,
       )}');
     }
   });
@@ -62,7 +62,7 @@ void main() {
       123456.000000789.d,
       precision: 9,
       prefix: '\$',
-      shrinkZeroMode: ShrinkZeroMode.compact,
+      shrinkZeroMode: ShrinkZeroMode.curlyBraces,
     );
     print(result);
     expect(result, "\$123,456.0{6}789");
@@ -113,7 +113,7 @@ void main() {
 
     /// 123456789.000000789 => '￥+1.2345.6789,0₆78元'
     try {
-      FlexiFormatter.setGlobalConfig(decimalSeparator: ',', groupSeparator: '.', groupCounts: 4);
+      FlexiFormatter.configureWith(decimalSeparator: ',', groupSeparator: '.', groupCounts: 4);
       var result = formatNumber(
         '123456789.000000789'.d,
         precision: 8,
@@ -128,17 +128,17 @@ void main() {
       print(result);
       expect(result, "￥+1.2345.6789,0₆78元");
     } finally {
-      FlexiFormatter.restoreGlobalDefaultConfig();
+      FlexiFormatter.restoreDefaultConfig();
     }
   });
 
   test('test custom shrin zero converter', () {
     print('=====custom shrin zero converter=====');
 
-    /// 123456789.000000789 => '￥+123,456,789.0[6]78元'
+    /// 123456789.000000789 => '￥+123,456,789.0<₆>78元'
     try {
-      FlexiFormatter.setGlobalConfig(shrinkZeroConverter: (zeroCounts) {
-        return '0[$zeroCounts]';
+      FlexiFormatter.configureWith(shrinkZeroConverter: (zeroCounts) {
+        return '0<${zeroCounts.subscriptNumeral}>';
       });
       var result = formatNumber(
         '123456789.000000789'.d,
@@ -151,9 +151,9 @@ void main() {
         suffix: '元',
       );
       print(result);
-      expect(result, "￥+123,456,789.0[6]78元");
+      expect(result, "￥+123,456,789.0<₆>78元");
     } finally {
-      FlexiFormatter.restoreGlobalDefaultConfig();
+      FlexiFormatter.restoreDefaultConfig();
     }
   });
 }

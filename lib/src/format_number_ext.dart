@@ -12,18 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of 'decimal_format_util.dart';
+part of 'format_number_util.dart';
 
 extension StringExt on String {
   Decimal? get decimal => Decimal.tryParse(this);
   Decimal get d => Decimal.tryParse(this) ?? Decimal.zero;
 
-  /// https://unicode.org/reports/tr9/
-  /// 从左到右嵌入
-  String get ltr => '\u202a$this\u202c';
+  String get ltr => lri;
 
-  /// 从右到左嵌入
-  String get rtl => '\u202b$this\u202c';
+  String get rtl => rli;
+
+  /// https://unicode.org/reports/tr9/
+  /// Explicit Directional Isolates
+  /// Treat the following text as isolated and left-to-right.
+  /// 将以下文本视为孤立的和从左到右的文本。
+  String get lri => ExplicitDirection.lri.apply(this);
+
+  /// Treat the following text as isolated and right-to-left.
+  /// 将以下文本视为孤立的和从右到左的文本。
+  String get rli => ExplicitDirection.rli.apply(this);
+
+  ///Treat the following text as isolated and in the direction of its first strong directional character that is not inside a nested isolate.
+  /// 将以下文本视为孤立文本，并沿其第一个强方向字符的方向处理，该字符不在嵌套隔离文本内。
+  String get fsi => ExplicitDirection.fsi.apply(this);
+
+  /// Explicit Directional Embeddings
+  /// Treat the following text as embedded left-to-right.
+  /// 将以下文本视为从左到右嵌入的文本。
+  String get lre => ExplicitDirection.lre.apply(this);
+
+  /// Treat the following text as embedded right-to-left.
+  /// 将以下文本视为从右到左嵌入的文本。
+  String get rle => ExplicitDirection.rle.apply(this);
+
+  /// Explicit Directional Overrides
+  /// Force following characters to be treated as strong left-to-right characters.
+  /// 强制将跟随字符视为从左到右的强字符。
+  String get lro => ExplicitDirection.lro.apply(this);
+
+  /// Force following characters to be treated as strong right-to-left characters.
+  /// 强制将跟随字符视为从右到左的强字符。
+  String get rlo => ExplicitDirection.rlo.apply(this);
 }
 
 extension BigIntExt on BigInt {
@@ -44,9 +73,9 @@ extension IntExt on int {
   String get subscriptNumeral {
     if (isNaN) return '';
     final buffer = StringBuffer(sign < 0 ? subscriptNegative : '');
-    final zeroCodeUnits = '0'.codeUnitAt(0);
+    final zeroCodeUnit = '0'.codeUnitAt(0);
     for (int unit in abs().toString().codeUnits) {
-      buffer.write(subscriptNumerals[unit - zeroCodeUnits]);
+      buffer.write(subscriptNumerals[unit - zeroCodeUnit]);
     }
     return buffer.toString();
   }
@@ -55,9 +84,9 @@ extension IntExt on int {
   String get superscriptNumeral {
     if (isNaN) return '';
     final buffer = StringBuffer(sign < 0 ? subscriptNegative : '');
-    final zeroCodeUnits = '0'.codeUnitAt(0);
+    final zeroCodeUnit = '0'.codeUnitAt(0);
     for (int unit in abs().toString().codeUnits) {
-      buffer.write(superscriptNumerals[unit - zeroCodeUnits]);
+      buffer.write(superscriptNumerals[unit - zeroCodeUnit]);
     }
     return buffer.toString();
   }
@@ -82,23 +111,8 @@ extension DecimalExt on Decimal {
     );
   }
 
-  /// Format this number with compact converter.
-  (String, String) _compact({
-    int precision = 2,
-    bool isClean = true,
-    RoundMode? roundMode,
-    CompactConverter? converter,
-  }) {
-    converter ??= FlexiFormatter.globalCompactConverter;
-    var (value, unit) = converter(this);
-    if (roundMode != null) value = value.toRoundMode(roundMode, scale: precision);
-    String result = value.toStringAsFixed(precision);
-    if (isClean) result = result.cleaned;
-    return (result, unit);
-  }
-
   /// use [RoundMode] to handling Decimal
-  Decimal toRoundMode(RoundMode mode, {int? scale}) {
+  Decimal rounding(RoundMode mode, {int? scale}) {
     scale ??= 0;
     return switch (mode) {
       RoundMode.round => round(scale: scale),
@@ -122,7 +136,7 @@ extension DecimalExt on Decimal {
     bool isClean = true,
   }) {
     Decimal val = this;
-    if (roundMode != null) val = toRoundMode(roundMode, scale: precision);
+    if (roundMode != null) val = rounding(roundMode, scale: precision);
     String result;
     if (val.abs() <= FlexiFormatter.exponentMinDecimal ||
         val.abs() > FlexiFormatter.exponentMaxDecimal) {
@@ -136,9 +150,26 @@ extension DecimalExt on Decimal {
 
   /// Parsing [Decimal] to percentage [String].
   String get percentage => '${(this * hundred).toStringAsFixed(2).cleaned}%';
+}
+
+extension on Decimal {
+  /// Format this number with compact converter.
+  (String, String) compact({
+    int precision = 2,
+    bool isClean = true,
+    RoundMode? roundMode,
+    CompactConverter? converter,
+  }) {
+    converter ??= FlexiFormatter.globalCompactConverter;
+    var (value, unit) = converter(this);
+    if (roundMode != null) value = value.rounding(roundMode, scale: precision);
+    String result = value.toStringAsFixed(precision);
+    if (isClean) result = result.cleaned;
+    return (result, unit);
+  }
 
   /// Format the integer part of Decimal with grouping configuration
-  (String, String) _group(
+  (String, String) group(
     int precision, {
     RoundMode? roundMode,
     bool isClean = true,
@@ -151,40 +182,33 @@ extension DecimalExt on Decimal {
       isClean: isClean,
     ).grouping(groupSeparator, groupCounts);
   }
-}
-
-extension on Decimal {
-  static final trillionDecimal = Decimal.ten.pow(12).toDecimal();
-  static final billionDecimal = Decimal.ten.pow(9).toDecimal();
-  static final millionDecimal = Decimal.ten.pow(6).toDecimal();
-  static final thousandDecimal = Decimal.ten.pow(3).toDecimal();
 
   (Decimal, String) get toThousandCompact {
     final val = abs();
-    if (val >= trillionDecimal) {
+    if (val >= trillion) {
       return (
-        (this / trillionDecimal).toDecimal(
+        (this / trillion).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
         'T',
       );
-    } else if (val >= billionDecimal) {
+    } else if (val >= billion) {
       return (
-        (this / billionDecimal).toDecimal(
+        (this / billion).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
         'B',
       );
-    } else if (val >= millionDecimal) {
+    } else if (val >= million) {
       return (
-        (this / millionDecimal).toDecimal(
+        (this / million).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
         'M',
       );
-    } else if (val >= thousandDecimal) {
+    } else if (val >= thousand) {
       return (
-        (this / thousandDecimal).toDecimal(
+        (this / thousand).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
         'K',
@@ -194,29 +218,25 @@ extension on Decimal {
     }
   }
 
-  static final hundredBillionDecimal = Decimal.ten.pow(12).toDecimal();
-  static final hundredMillionDecimal = Decimal.ten.pow(8).toDecimal();
-  static final tenThousandDecimal = Decimal.ten.pow(4).toDecimal();
-
   (Decimal, String) get toSimplifiedChineseCompact {
     final val = abs();
-    if (val > hundredBillionDecimal) {
+    if (val > trillion) {
       return (
-        (this / hundredBillionDecimal).toDecimal(
+        (this / trillion).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
         '兆',
       );
-    } else if (val > hundredMillionDecimal) {
+    } else if (val > hundredMillion) {
       return (
-        (this / hundredMillionDecimal).toDecimal(
+        (this / hundredMillion).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
         '亿',
       );
-    } else if (val > tenThousandDecimal) {
+    } else if (val > tenThousand) {
       return (
-        (this / tenThousandDecimal).toDecimal(
+        (this / tenThousand).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
         '万',
@@ -228,23 +248,23 @@ extension on Decimal {
 
   (Decimal, String) get toTraditionalChineseCompact {
     final val = abs();
-    if (val > hundredBillionDecimal) {
+    if (val > trillion) {
       return (
-        (this / hundredBillionDecimal).toDecimal(
+        (this / trillion).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
         '兆',
       );
-    } else if (val > hundredMillionDecimal) {
+    } else if (val > hundredMillion) {
       return (
-        (this / hundredMillionDecimal).toDecimal(
+        (this / hundredMillion).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
         '億',
       );
-    } else if (val > tenThousandDecimal) {
+    } else if (val > tenThousand) {
       return (
-        (this / tenThousandDecimal).toDecimal(
+        (this / tenThousand).toDecimal(
           scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
         ),
         '萬',
@@ -270,7 +290,7 @@ extension on String {
   (String, String) grouping(String? separator, int? groupCounts) {
     separator ??= FlexiFormatter.globalGroupIntegerSeparator;
     groupCounts ??= FlexiFormatter.globalGroupIntegerCounts;
-    groupCounts = groupCounts.clamp(1, 10);
+    groupCounts = groupCounts.clamp(1, maxGroupIntegerCounts);
 
     final dotIndex = indexOf(defaultDecimalSeparator);
     String integerPart, decimalPart;
@@ -308,9 +328,11 @@ extension on String {
         final zeroCounts = zeroPart.length;
         if (zeroCounts < 1) return zeroPart;
         return switch (shrinkMode) {
-          ShrinkZeroMode.compact => '0{$zeroCounts}',
           ShrinkZeroMode.subscript => '0${zeroCounts.subscriptNumeral}',
           ShrinkZeroMode.superscript => '0${zeroCounts.superscriptNumeral}',
+          ShrinkZeroMode.curlyBraces => '0{$zeroCounts}',
+          ShrinkZeroMode.parentheses => '0($zeroCounts)',
+          ShrinkZeroMode.squareBrackets => '0[$zeroCounts]',
           _ => shrinkConverter?.call(zeroCounts) ?? zeroPart,
         };
       },
@@ -319,13 +341,12 @@ extension on String {
     return '${substring(0, dotIndex)}${FlexiFormatter.globalDecimalSeparator}$formattedDecimal';
   }
 
-  String unicodeDirection(UnicodeDirection? direction) {
-    direction ??= FlexiFormatter.globalUnicodeDirection;
+  /// 应用显式双向格式
+  /// 支持(隔离/嵌入/覆盖)
+  String applyExplicitBidiFormatting(ExplicitDirection? direction) {
+    direction ??= FlexiFormatter.globalExplicitDirection;
     if (direction == null) return this;
 
-    return switch (direction) {
-      UnicodeDirection.ltr => ltr,
-      UnicodeDirection.rtl => rtl,
-    };
+    return direction.apply(this);
   }
 }
