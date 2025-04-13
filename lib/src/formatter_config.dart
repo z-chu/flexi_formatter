@@ -149,6 +149,10 @@ final defaultExponentMinDecimal = Decimal.ten.pow(-15).toDecimal();
 final defaultExponentMaxDecimal = Decimal.ten.pow(21).toDecimal();
 
 abstract interface class FlexiFormatter {
+  /// Global configuration for round mode, default null.
+  static RoundMode? _globalRoundMode;
+  static RoundMode? get globalRoundMode => _globalRoundMode;
+
   /// Global configuration for explicit direction, default null.
   static ExplicitDirection? _globalExplicitDirection;
   static ExplicitDirection? get globalExplicitDirection => _globalExplicitDirection;
@@ -185,7 +189,9 @@ abstract interface class FlexiFormatter {
   static Decimal _exponentMaxDecimal = Decimal.ten.pow(21).toDecimal();
   static Decimal get exponentMaxDecimal => _exponentMaxDecimal;
 
-  static void restoreDefaultConfig() {
+  /// Restore the global default configuration
+  static void restoreGlobalConfig() {
+    _globalRoundMode = null;
     _globalExplicitDirection = null;
     _globalShrinkZeroMode = null;
     _globalShrinkZeroConverter = null;
@@ -197,9 +203,11 @@ abstract interface class FlexiFormatter {
     _exponentMaxDecimal = defaultExponentMaxDecimal;
   }
 
-  static FlexiFormatter get configureWith => _$FlexiFormatterConfigurator();
+  /// Configure global settings
+  static FlexiFormatter get setGlobalConfig => const _$FlexiFormatterConfigurator();
 
   void call({
+    RoundMode? roundMode,
     ExplicitDirection? direction,
     ShrinkZeroMode? shrikMode,
     String decimalSeparator,
@@ -225,6 +233,7 @@ final class _$FlexiFormatterConfigurator implements FlexiFormatter {
 
   @override
   void call({
+    Object? roundMode = _placeHolder,
     Object? direction = _placeHolder,
     Object? shrikMode = _placeHolder,
     Object? decimalSeparator = _placeHolder,
@@ -232,9 +241,13 @@ final class _$FlexiFormatterConfigurator implements FlexiFormatter {
     Object? groupCounts = _placeHolder,
     Object? compactConverter = _placeHolder,
     Object? shrinkZeroConverter = _placeHolder,
-    Object? exponentMinDecimal,
-    Object? exponentMaxDecimal,
+    Object? exponentMinDecimal = _placeHolder,
+    Object? exponentMaxDecimal = _placeHolder,
   }) {
+    if (roundMode != _placeHolder && (roundMode == null || roundMode is RoundMode)) {
+      FlexiFormatter._globalRoundMode = roundMode as RoundMode?;
+    }
+
     if (direction != _placeHolder && (direction == null || direction is ExplicitDirection)) {
       FlexiFormatter._globalExplicitDirection = direction as ExplicitDirection?;
     }

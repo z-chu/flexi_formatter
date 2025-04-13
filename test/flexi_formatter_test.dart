@@ -113,7 +113,7 @@ void main() {
 
     /// 123456789.000000789 => '￥+1.2345.6789,0₆78元'
     try {
-      FlexiFormatter.configureWith(decimalSeparator: ',', groupSeparator: '.', groupCounts: 4);
+      FlexiFormatter.setGlobalConfig(decimalSeparator: ',', groupSeparator: '.', groupCounts: 4);
       var result = formatNumber(
         '123456789.000000789'.d,
         precision: 8,
@@ -128,7 +128,7 @@ void main() {
       print(result);
       expect(result, "￥+1.2345.6789,0₆78元");
     } finally {
-      FlexiFormatter.restoreDefaultConfig();
+      FlexiFormatter.restoreGlobalConfig();
     }
   });
 
@@ -137,7 +137,7 @@ void main() {
 
     /// 123456789.000000789 => '￥+123,456,789.0<₆>78元'
     try {
-      FlexiFormatter.configureWith(shrinkZeroConverter: (zeroCounts) {
+      FlexiFormatter.setGlobalConfig(shrinkZeroConverter: (zeroCounts) {
         return '0<${zeroCounts.subscriptNumeral}>';
       });
       var result = formatNumber(
@@ -153,7 +153,7 @@ void main() {
       print(result);
       expect(result, "￥+123,456,789.0<₆>78元");
     } finally {
-      FlexiFormatter.restoreDefaultConfig();
+      FlexiFormatter.restoreGlobalConfig();
     }
   });
 }

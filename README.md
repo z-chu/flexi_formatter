@@ -56,7 +56,7 @@ try {
     suffix: '元',
   ));
 } finally {
-  FlexiFormatter.restoreGlobalDefaultConfig();
+  FlexiFormatter.restoreGlobalConfig();
 }
 ```
 

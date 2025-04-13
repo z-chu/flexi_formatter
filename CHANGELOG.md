@@ -1,3 +1,7 @@
+## 1.5.0
+- Optimize global configuration.
+- Optimize code.
+
 ## 1.4.0
 - Support unicode explicit directional(isolates, embeddings, overrides)
 - Managemnet global configuration.

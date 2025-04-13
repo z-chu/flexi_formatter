@@ -15,8 +15,7 @@
 part of 'format_number_util.dart';
 
 extension StringExt on String {
-  Decimal? get decimal => Decimal.tryParse(this);
-  Decimal get d => Decimal.tryParse(this) ?? Decimal.zero;
+  Decimal? get d => Decimal.tryParse(this);
 
   String get ltr => lri;
 
@@ -56,17 +55,14 @@ extension StringExt on String {
 }
 
 extension BigIntExt on BigInt {
-  Decimal get decimal => d;
   Decimal get d => Decimal.fromBigInt(this);
 }
 
 extension DoubleExt on double {
-  Decimal get decimal => d;
   Decimal get d => Decimal.parse(toString());
 }
 
 extension IntExt on int {
-  Decimal get decimal => d;
   Decimal get d => Decimal.fromInt(this);
 
   /// 将数字转换为下角标形式字符展示.
@@ -135,14 +131,15 @@ extension DecimalExt on Decimal {
     RoundMode? roundMode,
     bool isClean = true,
   }) {
-    Decimal val = this;
-    if (roundMode != null) val = rounding(roundMode, scale: precision);
+    Decimal value = this;
+    roundMode ??= FlexiFormatter.globalRoundMode;
+    if (roundMode != null) value = rounding(roundMode, scale: precision);
     String result;
-    if (val.abs() <= FlexiFormatter.exponentMinDecimal ||
-        val.abs() > FlexiFormatter.exponentMaxDecimal) {
-      result = val.toStringAsExponential(precision);
+    if (value.abs() <= FlexiFormatter.exponentMinDecimal ||
+        value.abs() > FlexiFormatter.exponentMaxDecimal) {
+      result = value.toStringAsExponential(precision);
     } else {
-      result = val.toStringAsFixed(precision);
+      result = value.toStringAsFixed(precision);
     }
     if (isClean) result = result.cleaned;
     return result;
@@ -162,6 +159,7 @@ extension on Decimal {
   }) {
     converter ??= FlexiFormatter.globalCompactConverter;
     var (value, unit) = converter(this);
+    roundMode ??= FlexiFormatter.globalRoundMode;
     if (roundMode != null) value = value.rounding(roundMode, scale: precision);
     String result = value.toStringAsFixed(precision);
     if (isClean) result = result.cleaned;

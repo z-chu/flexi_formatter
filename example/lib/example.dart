@@ -47,7 +47,7 @@ void main() {
 
   /// 123456789.000000789 => '￥+1.2345.6789,0₆78元'
   try {
-    FlexiFormatter.configureWith(decimalSeparator: ',', groupSeparator: '.', groupCounts: 4);
+    FlexiFormatter.setGlobalConfig(decimalSeparator: ',', groupSeparator: '.', groupCounts: 4);
     print(formatNumber(
       '123456789.000000789'.d,
       precision: 8,
@@ -60,7 +60,7 @@ void main() {
       suffix: '元',
     ));
   } finally {
-    FlexiFormatter.restoreDefaultConfig();
+    FlexiFormatter.restoreGlobalConfig();
   }
 
   print('>>>>Isolates>>>>');
