@@ -148,7 +148,7 @@ final trillion = Decimal.ten.pow(12).toDecimal();
 final defaultExponentMinDecimal = Decimal.ten.pow(-15).toDecimal();
 final defaultExponentMaxDecimal = Decimal.ten.pow(21).toDecimal();
 
-abstract interface class FlexiFormatter {
+abstract final class FlexiFormatter {
   /// Global configuration for round mode, default null.
   static RoundMode? _globalRoundMode;
   static RoundMode? get globalRoundMode => _globalRoundMode;

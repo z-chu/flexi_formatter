@@ -1,3 +1,6 @@
+## 1.5.1
+- Optimize code.
+
 ## 1.5.0
 - Optimize global configuration.
 - Optimize code.

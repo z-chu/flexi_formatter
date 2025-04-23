@@ -95,7 +95,7 @@ String formatPercentage(
   bool expandHundred = true,
   int precision = 2,
   bool showSign = false,
-  RoundMode roundMode = RoundMode.floor,
+  RoundMode roundMode = RoundMode.truncate,
   bool cutInvalidZero = false,
   ExplicitDirection? direction,
   String suffix = '%',
@@ -118,7 +118,7 @@ String formatPrice(
   Decimal? val, {
   int precision = 2,
   bool showSign = false,
-  RoundMode roundMode = RoundMode.floor,
+  RoundMode roundMode = RoundMode.truncate,
   bool cutInvalidZero = true,
   bool enableGrouping = true,
   ShrinkZeroMode? shrinkZeroMode,

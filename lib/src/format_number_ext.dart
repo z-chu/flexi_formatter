@@ -79,7 +79,7 @@ extension IntExt on int {
   /// 将数字转换为上角标形式字符展示.
   String get superscriptNumeral {
     if (isNaN) return '';
-    final buffer = StringBuffer(sign < 0 ? subscriptNegative : '');
+    final buffer = StringBuffer(sign < 0 ? superscriptNegative : '');
     final zeroCodeUnit = '0'.codeUnitAt(0);
     for (int unit in abs().toString().codeUnits) {
       buffer.write(superscriptNumerals[unit - zeroCodeUnit]);

@@ -94,7 +94,7 @@ void main() {
     var result = formatNumber(
       '123456789.000000789'.d,
       precision: 8,
-      roundMode: RoundMode.floor,
+      roundMode: RoundMode.truncate,
       cutInvalidZero: true,
       enableGrouping: true,
       groupSepartor: '_',
@@ -117,7 +117,7 @@ void main() {
       var result = formatNumber(
         '123456789.000000789'.d,
         precision: 8,
-        roundMode: RoundMode.floor,
+        roundMode: RoundMode.truncate,
         cutInvalidZero: true,
         enableGrouping: true,
         shrinkZeroMode: ShrinkZeroMode.subscript,
@@ -143,7 +143,7 @@ void main() {
       var result = formatNumber(
         '123456789.000000789'.d,
         precision: 8,
-        roundMode: RoundMode.floor,
+        roundMode: RoundMode.truncate,
         cutInvalidZero: true,
         enableGrouping: true,
         showSign: true,

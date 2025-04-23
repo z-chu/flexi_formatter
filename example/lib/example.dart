@@ -2,7 +2,7 @@ import 'package:flexi_formatter/flexi_formatter.dart';
 
 void main() {
   /// 987654321.123456789 => '987654321.12345'
-  print(formatNumber(987654321.123456789.d, precision: 5, roundMode: RoundMode.floor));
+  print(formatNumber(987654321.123456789.d, precision: 5, roundMode: RoundMode.truncate));
 
   /// 1.00000123000 => '1.0{5}123'
   print(formatNumber(
@@ -22,7 +22,7 @@ void main() {
   print(formatAmount(9876543210.1.d));
 
   /// 9876543210.1 => '9.87B'
-  print(formatAmount(9876543210.1.d, roundMode: RoundMode.floor));
+  print(formatAmount(9876543210.1.d, roundMode: RoundMode.truncate));
 
   /// 9876543210.1 => '98.77亿'
   print(formatAmount(
@@ -34,7 +34,7 @@ void main() {
   print(formatNumber(
     '123456789.000000789'.d,
     precision: 8,
-    roundMode: RoundMode.floor,
+    roundMode: RoundMode.truncate,
     cutInvalidZero: true,
     enableGrouping: true,
     groupSepartor: '_',
@@ -51,7 +51,7 @@ void main() {
     print(formatNumber(
       '123456789.000000789'.d,
       precision: 8,
-      roundMode: RoundMode.floor,
+      roundMode: RoundMode.truncate,
       cutInvalidZero: true,
       enableGrouping: true,
       shrinkZeroMode: ShrinkZeroMode.subscript,
