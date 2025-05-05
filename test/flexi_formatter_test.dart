@@ -23,6 +23,31 @@ void main() {
     }
   });
 
+  test('test ShrinkZeroMode multiple places are zeroes', () {
+    const value = '123456789.000001230000012300000';
+    var result = formatNumber(
+      value.d,
+      precision: 13,
+      shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+    );
+    print(result);
+    expect(result, '123456789.0{5}123');
+
+    try {
+      FlexiFormatter.setGlobalConfig(decimalSeparator: ',', groupSeparator: '.', groupCounts: 2);
+      result = formatNumber(
+        value.d,
+        precision: 23,
+        enableGrouping: true,
+        shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+      );
+      print(result);
+      expect(result, '1.23.45.67.89,0{5}1230{5}123');
+    } finally {
+      FlexiFormatter.restoreGlobalConfig();
+    }
+  });
+
   test('test formatPercentage', () {
     print('=====formatPercentage=====');
 
@@ -136,24 +161,21 @@ void main() {
     print('=====custom shrin zero converter=====');
 
     /// 123456789.000000789 => '￥+123,456,789.0<₆>78元'
-    try {
-      FlexiFormatter.setGlobalConfig(shrinkZeroConverter: (zeroCounts) {
+    var result = formatNumber(
+      '123456789.000000789'.d,
+      precision: 8,
+      roundMode: RoundMode.truncate,
+      cutInvalidZero: true,
+      enableGrouping: true,
+      shrinkZeroMode: ShrinkZeroMode.custom,
+      shrinkZeroConverter: (zeroCounts) {
         return '0<${zeroCounts.subscriptNumeral}>';
-      });
-      var result = formatNumber(
-        '123456789.000000789'.d,
-        precision: 8,
-        roundMode: RoundMode.truncate,
-        cutInvalidZero: true,
-        enableGrouping: true,
-        showSign: true,
-        prefix: '￥',
-        suffix: '元',
-      );
-      print(result);
-      expect(result, "￥+123,456,789.0<₆>78元");
-    } finally {
-      FlexiFormatter.restoreGlobalConfig();
-    }
+      },
+      showSign: true,
+      prefix: '￥',
+      suffix: '元',
+    );
+    print(result);
+    expect(result, "￥+123,456,789.0<₆>78元");
   });
 }

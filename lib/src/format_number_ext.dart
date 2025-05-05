@@ -135,8 +135,9 @@ extension DecimalExt on Decimal {
     roundMode ??= FlexiFormatter.globalRoundMode;
     if (roundMode != null) value = rounding(roundMode, scale: precision);
     String result;
-    if (value.abs() <= FlexiFormatter.exponentMinDecimal ||
-        value.abs() > FlexiFormatter.exponentMaxDecimal) {
+    if (value != Decimal.zero &&
+        (value.abs() <= FlexiFormatter.exponentMinDecimal ||
+            value.abs() > FlexiFormatter.exponentMaxDecimal)) {
       result = value.toStringAsExponential(precision);
     } else {
       result = value.toStringAsFixed(precision);
@@ -313,12 +314,19 @@ extension on String {
   }) {
     shrinkMode ??= FlexiFormatter.globalShrinkZeroMode;
     shrinkConverter ??= FlexiFormatter.globalShrinkZeroConverter;
-    // if (shrinkZeroMode == null) return this;
 
     final dotIndex = lastIndexOf(defaultDecimalSeparator);
     if (dotIndex == -1) return this;
 
-    final decimalPart = substring(dotIndex + 1);
+    final decimalSeparator = FlexiFormatter.globalDecimalSeparator;
+
+    // 如果未指定[shrinkMode] 或 指定了自定义模式, 但[shrinkConverter]未指定, 则无需进行零收缩
+    if (shrinkMode == null ||
+        (shrinkMode == ShrinkZeroMode.custom && shrinkConverter == null)) {
+      return '${substring(0, dotIndex)}$decimalSeparator${substring(dotIndex + 1)}';
+    }
+
+    final decimalPart = cleaned.substring(dotIndex + 1);
     final formattedDecimal = decimalPart.replaceAllMapped(
       RegExp(r'(0{4,})(?=[1-9]|$)'),
       (Match match) {
@@ -336,7 +344,7 @@ extension on String {
       },
     );
 
-    return '${substring(0, dotIndex)}${FlexiFormatter.globalDecimalSeparator}$formattedDecimal';
+    return '${substring(0, dotIndex)}$decimalSeparator$formattedDecimal';
   }
 
   /// 应用显式双向格式

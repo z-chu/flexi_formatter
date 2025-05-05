@@ -1,3 +1,6 @@
+## 1.5.2
+- bugfix.
+
 ## 1.5.1
 - Optimize code.
 
