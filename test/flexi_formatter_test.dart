@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flexi_formatter/flexi_formatter.dart';
 import 'package:test/test.dart' show test, expect;
 
@@ -24,25 +25,73 @@ void main() {
   });
 
   test('test ShrinkZeroMode multiple places are zeroes', () {
-    const value = '123456789.000001230000012300000';
+    print('=====ShrinkZeroMode multiple places are zeroes=====');
+    const value = '123456789.000001230000012300';
     var result = formatNumber(
       value.d,
       precision: 13,
       shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+      cutInvalidZero: true,
     );
     print(result);
     expect(result, '123456789.0{5}123');
+
+    result = formatNumber(
+      value.d,
+      precision: 13,
+      shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+      cutInvalidZero: false,
+    );
+    print(result);
+    expect(result, '123456789.0{5}1230{5}');
 
     try {
       FlexiFormatter.setGlobalConfig(decimalSeparator: ',', groupSeparator: '.', groupCounts: 2);
       result = formatNumber(
         value.d,
-        precision: 23,
+        precision: 16,
         enableGrouping: true,
         shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+        cutInvalidZero: false,
       );
       print(result);
       expect(result, '1.23.45.67.89,0{5}1230{5}123');
+
+      result = formatNumber(
+        value.d,
+        precision: 18,
+        enableGrouping: true,
+        shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+        cutInvalidZero: false,
+      );
+      print(result);
+      expect(result, '1.23.45.67.89,0{5}1230{5}12300');
+    } finally {
+      FlexiFormatter.restoreGlobalConfig();
+    }
+  });
+
+  test('test ShrinkZeroMode ', () {
+    print('=====ShrinkZeroMode=====');
+    var result = formatNumber(
+      '88.00'.d,
+      precision: 2,
+      shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+      cutInvalidZero: false,
+    );
+    print(result);
+    expect(result, '88.00');
+
+    try {
+      FlexiFormatter.setGlobalConfig(shrikMode: ShrinkZeroMode.curlyBraces);
+      result = formatPercentage(
+        '88.00'.d,
+        expandHundred: false,
+        precision: 2,
+        cutInvalidZero: true,
+      );
+      print(result);
+      expect(result, '88%');
     } finally {
       FlexiFormatter.restoreGlobalConfig();
     }
@@ -177,5 +226,29 @@ void main() {
     );
     print(result);
     expect(result, "￥+123,456,789.0<₆>78元");
+  });
+
+  test('test minimum and maximum', () {
+    print('=====minimum and maximum=====');
+    final minimum = Decimal.ten.pow(-16).toDecimal();
+
+    var result = formatNumber(
+      minimum,
+      precision: 18,
+      shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+      cutInvalidZero: true,
+    );
+    print(result);
+    expect(result, '1.e-16');
+
+    final maximum = Decimal.ten.pow(22).toDecimal();
+    result = formatNumber(
+      maximum,
+      precision: 18,
+      shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+      cutInvalidZero: true,
+    );
+    print(result);
+    expect(result, '1.e+22');
   });
 }
