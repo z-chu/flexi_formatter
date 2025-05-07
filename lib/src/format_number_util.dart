@@ -98,6 +98,7 @@ String formatPercentage(
   RoundMode roundMode = RoundMode.truncate,
   bool cutInvalidZero = false,
   ExplicitDirection? direction,
+  String prefix = '',
   String suffix = '%',
   String defIfNull = '--', // 如果为空或无效值时的默认展示.
 }) {
@@ -108,6 +109,7 @@ String formatPercentage(
     roundMode: roundMode,
     cutInvalidZero: cutInvalidZero,
     direction: direction,
+    prefix: prefix,
     suffix: suffix,
     defIfNull: defIfNull,
   );

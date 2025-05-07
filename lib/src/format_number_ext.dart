@@ -14,7 +14,7 @@
 
 part of 'format_number_util.dart';
 
-extension StringExt on String {
+extension FlexiFormatterStringExt on String {
   Decimal? get d => Decimal.tryParse(this);
 
   String get ltr => lri;
@@ -54,15 +54,15 @@ extension StringExt on String {
   String get rlo => ExplicitDirection.rlo.apply(this);
 }
 
-extension BigIntExt on BigInt {
+extension FlexiFormatterBigIntExt on BigInt {
   Decimal get d => Decimal.fromBigInt(this);
 }
 
-extension DoubleExt on double {
+extension FlexiFormatterDoubleExt on double {
   Decimal get d => Decimal.parse(toString());
 }
 
-extension IntExt on int {
+extension FlexiFormatterIntExt on int {
   Decimal get d => Decimal.fromInt(this);
 
   /// 将数字转换为下角标形式字符展示.
@@ -88,7 +88,7 @@ extension IntExt on int {
   }
 }
 
-extension DecimalExt on Decimal {
+extension FlexiFormatterDecimalExt on Decimal {
   Decimal get half => (this / two).toDecimal(
         scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
       );
@@ -279,9 +279,9 @@ extension on String {
     return switch (this) {
       String value when value.endsWith(defaultDecimalSeparator) =>
         value.substring(0, value.length - 1),
+      String value when value.contains('e') => value.replaceAll(RegExp(r'(?<=\.\d*?)0+(?!\d)'), ''),
       String value when value.endsWith('0') && contains(defaultDecimalSeparator) =>
         value.substring(0, value.length - 1).cleaned,
-      String value when value.contains('e') => value.replaceAll(RegExp(r'(?<=\.\d*?)0+(?!\d)'), ''),
       _ => this,
     };
   }
