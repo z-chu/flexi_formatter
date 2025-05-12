@@ -14,7 +14,7 @@
 
 part of 'format_number_util.dart';
 
-extension FlexiFormatterStringExt on String {
+extension FlexiNumberFormatterStringExt on String {
   Decimal? get d => Decimal.tryParse(this);
 
   String get ltr => lri;
@@ -54,15 +54,15 @@ extension FlexiFormatterStringExt on String {
   String get rlo => ExplicitDirection.rlo.apply(this);
 }
 
-extension FlexiFormatterBigIntExt on BigInt {
+extension FlexiNumberFormatterBigIntExt on BigInt {
   Decimal get d => Decimal.fromBigInt(this);
 }
 
-extension FlexiFormatterDoubleExt on double {
+extension FlexiNumberFormatterDoubleExt on double {
   Decimal get d => Decimal.parse(toString());
 }
 
-extension FlexiFormatterIntExt on int {
+extension FlexiNumberFormatterIntExt on int {
   Decimal get d => Decimal.fromInt(this);
 
   /// 将数字转换为下角标形式字符展示.
@@ -88,7 +88,7 @@ extension FlexiFormatterIntExt on int {
   }
 }
 
-extension FlexiFormatterDecimalExt on Decimal {
+extension FlexiNumberFormatterDecimalExt on Decimal {
   Decimal get half => (this / two).toDecimal(
         scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
       );

@@ -1,6 +1,25 @@
 import 'package:flexi_formatter/flexi_formatter.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 void main() {
+  print('\n-----Number Formatter-----');
+  printFormatNumber();
+
+  print('\n-----Explicit Direction-----');
+  printExplicitDirection();
+
+  print('\n-----DateTime Formatter-----');
+  initializeDateFormatting();
+  final now = DateTime.now();
+  printFormatDateTime(now, 'en-US');
+  printFormatDateTime(now, 'zh-CN');
+  printFormatDateTime(now, 'zh-TW');
+  printFormatDateTime(now, 'ja-JP');
+  printFormatDateTime(now, 'ko-KR');
+}
+
+void printFormatNumber() {
   /// 987654321.123456789 => '987654321.12345'
   print(formatNumber(987654321.123456789.d, precision: 5, roundMode: RoundMode.truncate));
 
@@ -27,7 +46,7 @@ void main() {
   /// 9876543210.1 => '98.77亿'
   print(formatAmount(
     9876543210.1.d,
-    compactConverter: FlexiFormatter.simplifiedChineseCompactConverter,
+    compactConverter: simplifiedChineseCompactConverter,
   ));
 
   /// 1234567890.000000789 => '￥+1_2345_6789.0₆78元'
@@ -62,7 +81,9 @@ void main() {
   } finally {
     FlexiFormatter.restoreGlobalConfig();
   }
+}
 
+void printExplicitDirection() {
   print('>>>>Isolates>>>>');
   print('￥+123456.0₆789元'.fsi); // ￥+123456.0₆789元
   print('￥+123456.0₆789元'.lri); // ￥+123456.0₆789元
@@ -87,4 +108,21 @@ void main() {
   print('مرحبا: ${'http://example.com'.fsi}'.rlo);
   print('مرحبا: ${uniLRI}http://example.com'.rle);
   print('مرحبا: ${uniLRE}http://example.com'.rli);
+}
+
+void printFormatDateTime(DateTime dateTime, [String? locale]) {
+  print('-----$locale------');
+  FlexiFormatter.setCurrentLocale(locale);
+  print('MMMEd \t: ${dateTime.MMMEd}');
+  print('QQQQ \t: ${dateTime.QQQQ}');
+  print('yMd \t: ${dateTime.yMd}');
+  print('yMMMEd \t: ${dateTime.yMMMEd}');
+  print('yMMMMEEEEd \t: ${dateTime.yMMMMEEEEd}');
+  print('combine(yMMMMEEEEd + jms) \t: ${dateTime.yMMMMEEEEd_jms}');
+  print('combine(yMEd + jms) \t: ${dateTime.yMEd_jms}');
+  print(
+    'combine(yQQQ + MMMd) \t: ${dateTime.combineFormat(DateFormat.YEAR_ABBR_QUARTER, DateFormat.ABBR_MONTH_DAY)}',
+  );
+  print('format(yMEd) \t: ${dateTime.format(DateFormat.YEAR_NUM_MONTH_WEEKDAY_DAY)}');
+  print('format(yyyyMMDDHHmmssSSS) \t: ${dateTime.format(yyyyMMDDHHmmssSSS)}');
 }

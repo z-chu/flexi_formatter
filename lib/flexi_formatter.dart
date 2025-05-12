@@ -14,4 +14,7 @@
 
 library;
 
+export 'src/constants.dart';
+export 'src/formatter_config.dart';
+export 'src/format_date_time.dart';
 export 'src/format_number_util.dart';

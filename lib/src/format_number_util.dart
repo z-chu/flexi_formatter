@@ -14,7 +14,9 @@
 
 import 'package:decimal/decimal.dart';
 
-part 'formatter_config.dart';
+import 'constants.dart';
+import 'formatter_config.dart';
+
 part 'format_number_ext.dart';
 
 String formatNumber(
@@ -181,4 +183,22 @@ String formatAmount(
     defIfZero: defIfZero,
     defIfNull: defIfNull,
   );
+}
+
+/// 不进行零收缩转换器
+String nonShrinkZeroConverter(zeroCounts) => '0' * zeroCounts;
+
+/// 千分位精简转换器
+(Decimal, String) thousandCompactConverter(Decimal val) {
+  return val.toThousandCompact;
+}
+
+/// 简体中文精简转换器  Simplified Chinese compact conversion
+(Decimal, String) simplifiedChineseCompactConverter(Decimal val) {
+  return val.toSimplifiedChineseCompact;
+}
+
+/// 繁体中文精简转换器 Traditional Chinese compact conversion
+(Decimal, String) traditionalChineseCompactConverter(Decimal val) {
+  return val.toTraditionalChineseCompact;
 }
