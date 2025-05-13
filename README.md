@@ -73,10 +73,21 @@ try {
 
 ```dart
 initializeDateFormatting();
-final now = DateTime.now();
-printFormatDateTime(now, 'en-US');
-printFormatDateTime(now, 'zh-CN');
-printFormatDateTime(now, 'zh-TW');
+
+/// >>> 2024-05-01 12:30:45.123
+print('2024-05-01T12:30:45.123456'.toDateTime()?.format(yyyyMMDDHHmmssSSS));
+
+/// >>> 2025-05-01 12:30:45.000
+print(1746073845.dateTimeInSecond.format(yyyyMMDDHHmmssSSS));
+
+/// >>> 2025-05-01 12:30:45.123
+print(1746073845123.dateTimeInMillisecond.format(yyyyMMDDHHmmssSSS));
+print(1746073845123456.dateTimeInMicrosecond.format(yyyyMMDDHHmmssSSS));
+
+final dateTime = DateTime(2025, 5, 1, 12, 30, 45, 123, 456);
+printFormatDateTime(dateTime, 'en-US');
+printFormatDateTime(dateTime, 'zh-CN');
+printFormatDateTime(dateTime, 'ja-JP');
 
 void printFormatDateTime(DateTime dateTime, [String? locale]) {
   print('-----$locale------');
@@ -97,27 +108,38 @@ void printFormatDateTime(DateTime dateTime, [String? locale]) {
 
 >>> output :
 -----en-US------
-MMMEd 	: Mon, May 12
-QQQQ 	  : 2nd quarter
-yMd 	  : 5/12/2025
-yMMMEd 	: Mon, May 12, 2025
-yMMMMEEEEd 	: Monday, May 12, 2025
-combine(yMMMMEEEEd + jms) 	: Monday, May 12, 2025 4:48:18 PM
-combine(yMEd + jms) 	: Mon, 5/12/2025 4:48:18 PM
-combine(yQQQ + MMMd) 	: Q2 2025 May 12
-format(yMEd) 	: Mon, 5/12/2025
-format(yyyyMMDDHHmmssSSS) 	: 2025-05-12 16:48:18.026
+MMMEd 	: Thu, May 1
+QQQQ 	: 2nd quarter
+yMd 	: 5/1/2025
+yMMMEd 	: Thu, May 1, 2025
+yMMMMEEEEd 	: Thursday, May 1, 2025
+combine(yMMMMEEEEd + jms) 	: Thursday, May 1, 2025 12:30:45 PM
+combine(yMEd + jms) 	: Thu, 5/1/2025 12:30:45 PM
+combine(yQQQ + MMMd) 	: Q2 2025 May 1
+format(yMEd) 	: Thu, 5/1/2025
+format(yyyyMMDDHHmmssSSS) 	: 2025-05-01 12:30:45.123
 -----zh-CN------
-MMMEd 	: 5月12日周一
-QQQQ 	  : 第二季度
-yMd 	  : 2025/5/12
-yMMMEd 	: 2025年5月12日周一
-yMMMMEEEEd 	: 2025年5月12日星期一
-combine(yMMMMEEEEd + jms) 	: 2025年5月12日星期一 16:48:18
-combine(yMEd + jms) 	: 2025/5/12周一 16:48:18
-combine(yQQQ + MMMd) 	: 2025年第2季度 5月12日
-format(yMEd) 	: 2025/5/12周一
-format(yyyyMMDDHHmmssSSS) 	: 2025-05-12 16:48:18.026
+MMMEd 	: 5月1日周四
+QQQQ 	: 第二季度
+yMd 	: 2025/5/1
+yMMMEd 	: 2025年5月1日周四
+yMMMMEEEEd 	: 2025年5月1日星期四
+combine(yMMMMEEEEd + jms) 	: 2025年5月1日星期四 12:30:45
+combine(yMEd + jms) 	: 2025/5/1周四 12:30:45
+combine(yQQQ + MMMd) 	: 2025年第2季度 5月1日
+format(yMEd) 	: 2025/5/1周四
+format(yyyyMMDDHHmmssSSS) 	: 2025-05-01 12:30:45.123
+-----ja-JP------
+MMMEd 	: 5月1日(木)
+QQQQ 	: 第2四半期
+yMd 	: 2025/5/1
+yMMMEd 	: 2025年5月1日(木)
+yMMMMEEEEd 	: 2025年5月1日木曜日
+combine(yMMMMEEEEd + jms) 	: 2025年5月1日木曜日 12:30:45
+combine(yMEd + jms) 	: 2025/5/1(木) 12:30:45
+combine(yQQQ + MMMd) 	: 2025/Q2 5月1日
+format(yMEd) 	: 2025/5/1(木)
+format(yyyyMMDDHHmmssSSS) 	: 2025-05-01 12:30:45.123
 ```
 
 ## Usage
@@ -135,8 +157,8 @@ dependencies:
 import 'package:flexi_formatter/flexi_formatter.dart';
 ```
 
-* Start formatting using `formatNumber('987654321.0123456789'.d, precision: 5)`.
-
+* Start number formatting using `formatNumber('987654321.0123456789'.d, precision: 5)`.
+* Start date formatting using `dateTime.now().format(yyyyMMDDHHmmss)`.
 
 ## License
 Apache 2.0

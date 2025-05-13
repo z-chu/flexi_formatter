@@ -11,12 +11,13 @@ void main() {
 
   print('\n-----DateTime Formatter-----');
   initializeDateFormatting();
-  final now = DateTime.now();
-  printFormatDateTime(now, 'en-US');
-  printFormatDateTime(now, 'zh-CN');
-  printFormatDateTime(now, 'zh-TW');
-  printFormatDateTime(now, 'ja-JP');
-  printFormatDateTime(now, 'ko-KR');
+  convertToDateTime();
+  final dateTime = DateTime(2025, 5, 1, 12, 30, 45, 123, 456);
+  printFormatDateTime(dateTime, 'en-US');
+  printFormatDateTime(dateTime, 'zh-CN');
+  printFormatDateTime(dateTime, 'zh-TW');
+  printFormatDateTime(dateTime, 'ja-JP');
+  printFormatDateTime(dateTime, 'ko-KR');
 }
 
 void printFormatNumber() {
@@ -108,6 +109,18 @@ void printExplicitDirection() {
   print('مرحبا: ${'http://example.com'.fsi}'.rlo);
   print('مرحبا: ${uniLRI}http://example.com'.rle);
   print('مرحبا: ${uniLRE}http://example.com'.rli);
+}
+
+void convertToDateTime() {
+  /// >>> 2024-05-01 12:30:45.123
+  print('2024-05-01T12:30:45.123456'.toDateTime()?.format(yyyyMMDDHHmmssSSS));
+
+  /// >>> 2025-05-01 12:30:45.000
+  print(1746073845.dateTimeInSecond.format(yyyyMMDDHHmmssSSS));
+
+  /// >>> 2025-05-01 12:30:45.123
+  print(1746073845123.dateTimeInMillisecond.format(yyyyMMDDHHmmssSSS));
+  print(1746073845123456.dateTimeInMicrosecond.format(yyyyMMDDHHmmssSSS));
 }
 
 void printFormatDateTime(DateTime dateTime, [String? locale]) {

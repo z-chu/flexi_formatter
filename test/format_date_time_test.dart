@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:flexi_formatter/flexi_formatter.dart';
+import 'package:flexi_formatter/date_time.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:test/test.dart';

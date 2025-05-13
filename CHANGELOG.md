@@ -1,3 +1,6 @@
+## 1.6.1
+- Optimize code.
+
 ## 1.6.0
 - Optimize code.
 - Support DateTime formatting.
