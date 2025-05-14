@@ -115,19 +115,19 @@ void main() {
 
   group('DateTimeExtensions DiffToString Tests', () {
     test('diffToString day', () {
-      final result = testDate.diffToString(DateTime(2025, 4, 29, 17, 20, 30));
+      final result = testDate.countdownTo(DateTime(2025, 4, 29, 17, 20, 30));
       print("diffToString day: $result");
       expect(result, '1D 19H');
     });
 
     test('diffToString hour', () {
-      final result = testDate.diffToString(DateTime(2025, 5, 1, 17, 35, 45), true);
+      final result = testDate.countdownTo(DateTime(2025, 5, 1, 17, 35, 45), true);
       print("diffToString hour: $result");
       expect(result, '-05:05');
     });
 
     test('diffToString minute', () {
-      final result = testDate.diffToString(DateTime(2025, 5, 1, 12, 40, 35));
+      final result = testDate.countdownTo(DateTime(2025, 5, 1, 12, 40, 35));
       print("diffToString minute: $result");
       expect(result, '09:50');
     });

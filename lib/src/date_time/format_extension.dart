@@ -12,45 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// ignore_for_file: non_constant_identifier_names, constant_identifier_names
+// ignore_for_file: non_constant_identifier_names
 
-import 'package:intl/intl.dart';
+part of 'formatter.dart';
 
-import 'formatter_config.dart';
-
-enum TimeUnit {
-  /// 年
-  year(Duration.microsecondsPerDay * 365),
-
-  /// 月
-  month(Duration.microsecondsPerDay * 30),
-
-  /// 周
-  week(Duration.microsecondsPerDay * 7),
-
-  /// 天
-  day(Duration.microsecondsPerDay),
-
-  /// 小时
-  hour(Duration.microsecondsPerHour),
-
-  /// 分钟
-  minute(Duration.microsecondsPerMinute),
-
-  /// 秒
-  second(Duration.microsecondsPerSecond),
-
-  /// 毫秒
-  millisecond(Duration.microsecondsPerMillisecond),
-
-  /// 微秒
-  microsecond(1);
-
-  final int microseconds;
-  const TimeUnit(this.microseconds);
-}
-
-extension FlexiDateTimeFormatterStringExt on String {
+extension FlexiDateTimeFormatStringExt on String {
   /// Convert string to DateTime.
   DateTime? toDateTime() => DateTime.tryParse(this);
 }
@@ -70,36 +36,12 @@ extension FlexiDateTimeFormatterIntExt on int {
 /// 日期时间扩展
 /// 测试日期: DateTime(2025, 5, 1, 12, 30, 45);
 extension FlexiDateTimeFormatterExt on DateTime {
-  /// 检查DateTime是否在将来。
-  bool get isFuture => isAfter(DateTime.now());
-
-  /// 检查DateTime是否在过去。
-  bool get isPast => isBefore(DateTime.now());
-
-  /// 检查DateTime是否设置为本地时间.
-  bool get isLocal => !isUtc;
-
-  /// 计算两个日期时间之间的差异
-  /// [other] 另一个日期时间
-  /// [unit] 差异单位，默认为秒
-  num diff(DateTime other, {TimeUnit unit = TimeUnit.second}) {
-    final diff = difference(other);
-    return switch (unit) {
-      TimeUnit.year => diff.inDays / 365,
-      TimeUnit.month => diff.inDays / 30,
-      TimeUnit.week => diff.inDays / 7,
-      TimeUnit.day => diff.inDays,
-      TimeUnit.hour => diff.inHours,
-      TimeUnit.minute => diff.inMinutes,
-      TimeUnit.second => diff.inSeconds,
-      TimeUnit.millisecond => diff.inMilliseconds,
-      TimeUnit.microsecond => diff.inMicroseconds,
-    };
-  }
-
-  /// 计算两个日期时间之间的差异并返回格式化的字符串
+  /// 计算当前时间到[other]的时间差, 并格式化展示
   /// 主要用于倒计时展示
-  String diffToString([DateTime? other, bool showSign = false]) {
+  /// >= 1Day: 1D 12H
+  /// >= 1Hour: 12:30
+  /// else 30:45
+  String countdownTo([DateTime? other, bool showSign = false]) {
     other ??= DateTime.now();
     final diff = difference(other);
     var microseconds = diff.inMicroseconds;
@@ -146,263 +88,263 @@ extension FlexiDateTimeFormatterExt on DateTime {
     }
   }
 
-  String? get currentLocale {
+  String get formatLocale {
     return FlexiFormatter.currentLocale;
   }
 
   /// 使用 DateFormat.d 的国际化格式格式化日期
   /// >>> 1
-  String get d => DateFormat.d(currentLocale).format(this);
+  String get d => DateFormat.d(formatLocale).format(this);
 
   /// 使用 DateFormat.E 的国际化格式格式化日期
   /// >>> Thu, 周四
-  String get E => DateFormat.E(currentLocale).format(this);
+  String get E => DateFormat.E(formatLocale).format(this);
 
   /// 使用 DateFormat.EEEE 的国际化格式格式化日期
   /// >>> Thursday, 星期四
-  String get EEEE => DateFormat.EEEE(currentLocale).format(this);
+  String get EEEE => DateFormat.EEEE(formatLocale).format(this);
 
   /// 使用 DateFormat.EEEE 的国际化格式格式化日期
   /// >>> T, 四
-  String get EEEEE => DateFormat.EEEEE(currentLocale).format(this);
+  String get EEEEE => DateFormat.EEEEE(formatLocale).format(this);
 
   /// 使用 DateFormat.LLL 的国际化格式格式化日期
   /// >>> May, 5月
-  String get LLL => DateFormat.LLL(currentLocale).format(this);
+  String get LLL => DateFormat.LLL(formatLocale).format(this);
 
   /// 使用 DateFormat.LLLL 的国际化格式格式化日期
   /// >>> May, 5月
-  String get LLLL => DateFormat.LLLL(currentLocale).format(this);
+  String get LLLL => DateFormat.LLLL(formatLocale).format(this);
 
   /// 使用 DateFormat.M 的国际化格式格式化日期
   /// >>> 5月
-  String get M => DateFormat.M(currentLocale).format(this);
+  String get M => DateFormat.M(formatLocale).format(this);
 
   /// 使用 DateFormat.Md 的国际化格式格式化日期
   /// >>> 5/1, 5月1日
-  String get Md => DateFormat.Md(currentLocale).format(this);
+  String get Md => DateFormat.Md(formatLocale).format(this);
 
   /// 使用 DateFormat.MEd 的国际化格式格式化日期
   /// >>> Thu, 5/1, 5月1日, 周四
-  String get MEd => DateFormat.MEd(currentLocale).format(this);
+  String get MEd => DateFormat.MEd(formatLocale).format(this);
 
   /// 使用 DateFormat.MMM 的国际化格式格式化日期
   /// >>> May, 5月
-  String get MMM => DateFormat.MMM(currentLocale).format(this);
+  String get MMM => DateFormat.MMM(formatLocale).format(this);
 
   /// 使用 DateFormat.MMMd 的国际化格式格式化日期
   /// >>> May 1, 5月1日
-  String get MMMd => DateFormat.MMMd(currentLocale).format(this);
+  String get MMMd => DateFormat.MMMd(formatLocale).format(this);
 
   /// 使用 DateFormat.MMMEd 的国际化格式格式化日期
   /// >>> Thu, 5/1, 5月1日, 周四
-  String get MMMEd => DateFormat.MMMEd(currentLocale).format(this);
+  String get MMMEd => DateFormat.MMMEd(formatLocale).format(this);
 
   /// 使用 DateFormat.MMMM 的国际化格式格式化日期
   /// >>> May, 5月
-  String get MMMM => DateFormat.MMMM(currentLocale).format(this);
+  String get MMMM => DateFormat.MMMM(formatLocale).format(this);
 
   /// 使用 DateFormat.MMMMd 的国际化格式格式化日期
   /// >>> May 1, 5月1日
-  String get MMMMd => DateFormat.MMMMd(currentLocale).format(this);
+  String get MMMMd => DateFormat.MMMMd(formatLocale).format(this);
 
   // cSpell: ignore MMMMEEEEd
   /// 使用 DateFormat.MMMMEEEEd 的国际化格式格式化日期
   /// >>> Thursday, May 1, 5月1日, 周四
-  String get MMMMEEEEd => DateFormat.MMMMEEEEd(currentLocale).format(this);
+  String get MMMMEEEEd => DateFormat.MMMMEEEEd(formatLocale).format(this);
 
   /// 使用 DateFormat.QQQ 的国际化格式格式化日期
   /// >>> Q2, 第二季度
-  String get QQQ => DateFormat.QQQ(currentLocale).format(this);
+  String get QQQ => DateFormat.QQQ(formatLocale).format(this);
 
   /// 使用 DateFormat.QQQQ 的国际化格式格式化日期
   /// >>> 2nd quarter, 2025年第二季度
-  String get QQQQ => DateFormat.QQQQ(currentLocale).format(this);
+  String get QQQQ => DateFormat.QQQQ(formatLocale).format(this);
 
   /// 使用 DateFormat.y 的国际化格式格式化日期
   /// >>> 2025
-  String get y => DateFormat.y(currentLocale).format(this);
+  String get y => DateFormat.y(formatLocale).format(this);
 
   /// 使用 DateFormat.yM 的国际化格式格式化日期
   /// >>> 5/2025, 2025年5月
-  String get yM => DateFormat.yM(currentLocale).format(this);
+  String get yM => DateFormat.yM(formatLocale).format(this);
 
   /// 使用 DateFormat.yMd 的国际化格式格式化日期
   /// >>> 5/1/2025, 2025年5月1日
-  String get yMd => DateFormat.yMd(currentLocale).format(this);
+  String get yMd => DateFormat.yMd(formatLocale).format(this);
 
   /// 使用 DateFormat.yMEd 的国际化格式格式化日期
   /// >>> Thu, 5/1/2025, 2025年5月1日, 周四
-  String get yMEd => DateFormat.yMEd(currentLocale).format(this);
+  String get yMEd => DateFormat.yMEd(formatLocale).format(this);
 
   /// 使用 DateFormat.yMMM 的国际化格式格式化日期
   /// >>> May 2025, 2025年5月
-  String get yMMM => DateFormat.yMMM(currentLocale).format(this);
+  String get yMMM => DateFormat.yMMM(formatLocale).format(this);
 
   /// 使用 DateFormat.yMMMd 的国际化格式格式化日期
   /// >>> May 1, 2025, 2025年5月1日
-  String get yMMMd => DateFormat.yMMMd(currentLocale).format(this);
+  String get yMMMd => DateFormat.yMMMd(formatLocale).format(this);
 
   /// 使用 DateFormat.yMMMEd 的国际化格式格式化日期
   /// >>> Thu, May 1, 2025, 2025年5月1日, 周四
-  String get yMMMEd => DateFormat.yMMMEd(currentLocale).format(this);
+  String get yMMMEd => DateFormat.yMMMEd(formatLocale).format(this);
 
   /// 使用 DateFormat.yMMMM 的国际化格式格式化日期
   /// >>> May 2025, 2025年5月
-  String get yMMMM => DateFormat.yMMMM(currentLocale).format(this);
+  String get yMMMM => DateFormat.yMMMM(formatLocale).format(this);
 
   /// 使用 DateFormat.yMMMMd 的国际化格式格式化日期
   /// >>> May 1, 2025, 2025年5月1日
   /// >>> 2025年5月1日
-  String get yMMMMd => DateFormat.yMMMMd(currentLocale).format(this);
+  String get yMMMMd => DateFormat.yMMMMd(formatLocale).format(this);
 
   /// 使用 DateFormat.yMMMMEEEEd 的国际化格式格式化日期
   /// >>> Thursday, May 1, 2025, 2025年5月1日, 周四
-  String get yMMMMEEEEd => DateFormat.yMMMMEEEEd(currentLocale).format(this);
+  String get yMMMMEEEEd => DateFormat.yMMMMEEEEd(formatLocale).format(this);
 
   /// 使用 DateFormat.yQQQ 的国际化格式格式化日期
   /// >>> Q2 2025, 2025年第二季度
-  String get yQQQ => DateFormat.yQQQ(currentLocale).format(this);
+  String get yQQQ => DateFormat.yQQQ(formatLocale).format(this);
 
   /// 使用 DateFormat.yQQQQ 的国际化格式格式化日期
   /// >>> 2nd quarter 2025, 2025年第二季度
-  String get yQQQQ => DateFormat.yQQQQ(currentLocale).format(this);
+  String get yQQQQ => DateFormat.yQQQQ(formatLocale).format(this);
 
   /// 使用 DateFormat.H 的国际化格式格式化日期
   /// >>> 12
-  String get H => DateFormat.H(currentLocale).format(this);
+  String get H => DateFormat.H(formatLocale).format(this);
 
   /// 使用 DateFormat.Hm 的国际化格式格式化日期
   /// >>> 12:30
-  String get Hm => DateFormat.Hm(currentLocale).format(this);
+  String get Hm => DateFormat.Hm(formatLocale).format(this);
 
   /// 使用 DateFormat.Hms 的国际化格式格式化日期
   /// >>> 12:30:45
-  String get Hms => DateFormat.Hms(currentLocale).format(this);
+  String get Hms => DateFormat.Hms(formatLocale).format(this);
 
   /// 使用 DateFormat.j 的国际化格式格式化日期
   /// >>> 12 PM
-  String get j => DateFormat.j(currentLocale).format(this);
+  String get j => DateFormat.j(formatLocale).format(this);
 
   /// 使用 DateFormat.jm 的国际化格式格式化日期
   /// >>> 12:30 PM
-  String get jm => DateFormat.jm(currentLocale).format(this);
+  String get jm => DateFormat.jm(formatLocale).format(this);
 
   /// 使用 DateFormat.jms 的国际化格式格式化日期
   /// >>> 12:30:45 PM
-  String get jms => DateFormat.jms(currentLocale).format(this);
+  String get jms => DateFormat.jms(formatLocale).format(this);
 
   /// 使用 DateFormat.m 的国际化格式格式化日期
   /// >>> 30
-  String get m => DateFormat.m(currentLocale).format(this);
+  String get m => DateFormat.m(formatLocale).format(this);
 
   /// 使用 DateFormat.ms 的国际化格式格式化日期
   /// >>> 30:45
-  String get ms => DateFormat.ms(currentLocale).format(this);
+  String get ms => DateFormat.ms(formatLocale).format(this);
 
   /// 使用 DateFormat.s 的国际化格式格式化日期
   /// >>> 45
-  String get s => DateFormat.s(currentLocale).format(this);
+  String get s => DateFormat.s(formatLocale).format(this);
 
   /// 使用 DateFormat组合(yMMMMd + jms) 的国际化格式格式化日期
   /// >>> Thursday, May 1, 2025 12:30:45 PM
   /// >>> 2025年5月1日星期四 12:30:45 PM
-  String get yMMMMEEEEd_jms => DateFormat.yMMMMEEEEd(currentLocale).add_jms().format(this);
+  String get yMMMMEEEEd_jms => DateFormat.yMMMMEEEEd(formatLocale).add_jms().format(this);
 
   /// 使用 DateFormat组合(yMMMMd + jm) 的国际化格式格式化日期
   /// >>> May 1, 2025 12:30 PM
   /// >>> 2025年5月1日 12:30
-  String get yMMMMd_jm => DateFormat.yMMMMd(currentLocale).add_jm().format(this);
+  String get yMMMMd_jm => DateFormat.yMMMMd(formatLocale).add_jm().format(this);
 
   /// 使用 DateFormat组合(yMMMMd + jms) 的国际化格式格式化日期
   /// >>> May 1, 2025 12:30:45 PM
   /// >>> 2025年5月1日 12:30:45
-  String get yMMMMd_jms => DateFormat.yMMMMd(currentLocale).add_jms().format(this);
+  String get yMMMMd_jms => DateFormat.yMMMMd(formatLocale).add_jms().format(this);
 
   /// 使用 DateFormat组合(MMMd + jm) 的国际化格式格式化日期
   /// >>> May 1 12:30 PM
   /// >>> 5月1日 12:30
-  String get MMMMd_jm => DateFormat.MMMMd(currentLocale).add_jm().format(this);
+  String get MMMMd_jm => DateFormat.MMMMd(formatLocale).add_jm().format(this);
 
   /// 使用 DateFormat组合(MMMd + jms) 的国际化格式格式化日期
   /// >>> May 1 12:30:45 PM
   /// >>> 5月1日 12:30:45
-  String get MMMMd_jms => DateFormat.MMMMd(currentLocale).add_jms().format(this);
+  String get MMMMd_jms => DateFormat.MMMMd(formatLocale).add_jms().format(this);
 
   /// 使用 DateFormat组合(yMEd + jms) 的国际化格式格式化日期
   /// >>> Thu, 5/1/2025 12:30:45 PM
   /// >>> 2025/5/1周四 12:30:45
-  String get yMEd_jms => DateFormat.yMEd(currentLocale).add_jms().format(this);
+  String get yMEd_jms => DateFormat.yMEd(formatLocale).add_jms().format(this);
 
   /// 使用 DateFormat组合(yMd + jm) 的国际化格式格式化日期
   /// >>> 5/1/2025 12:30 PM
   /// >>> 2025/5/1 12:30
-  String get yMd_jm => DateFormat.yMd(currentLocale).add_jm().format(this);
+  String get yMd_jm => DateFormat.yMd(formatLocale).add_jm().format(this);
 
   /// 使用 DateFormat组合(yMd + jms) 的国际化格式格式化日期
   /// >>> 5/1/2025 12:30:45 PM
   /// >>> 2025/5/1 12:30:45
-  String get yMd_jms => DateFormat.yMd(currentLocale).add_jms().format(this);
+  String get yMd_jms => DateFormat.yMd(formatLocale).add_jms().format(this);
 
   /// 使用 DateFormat组合(Md + jms) 的国际化格式格式化日期
   /// >>> 5/1 12:30 PM
   /// >>> 5/1 12:30
-  String get Md_jm => DateFormat.Md(currentLocale).add_jm().format(this);
+  String get Md_jm => DateFormat.Md(formatLocale).add_jm().format(this);
 
   /// 使用 DateFormat组合(Md + jms) 的国际化格式格式化日期
   /// >>> 5/1 12:30:45 PM
   /// >>> 5/1 12:30:45
-  String get Md_jms => DateFormat.Md(currentLocale).add_jms().format(this);
+  String get Md_jms => DateFormat.Md(formatLocale).add_jms().format(this);
 
   /// 使用 DateFormat组合(yMd + Hms) 的国际化格式格式化日期
   /// >>> Thursday, May 1, 2025 12:30:45
   /// >>> 2025年5月1日星期四 12:30:45
-  String get yMMMMEEEEd_Hms => DateFormat.yMMMMEEEEd(currentLocale).add_Hms().format(this);
+  String get yMMMMEEEEd_Hms => DateFormat.yMMMMEEEEd(formatLocale).add_Hms().format(this);
 
   /// 使用 DateFormat组合(yMd + Hms) 的国际化格式格式化日期
   /// >>> May 1, 2025 12:30
   /// >>> 2025年5月1日 12:30
-  String get yMMMMd_Hm => DateFormat.yMMMMd(currentLocale).add_Hm().format(this);
+  String get yMMMMd_Hm => DateFormat.yMMMMd(formatLocale).add_Hm().format(this);
 
   /// 使用 DateFormat组合(yMd + Hms) 的国际化格式格式化日期
   /// >>> May 1, 2025 12:30:45
   /// >>> 2025年5月1日 12:30:45
-  String get yMMMMd_Hms => DateFormat.yMMMMd(currentLocale).add_Hms().format(this);
+  String get yMMMMd_Hms => DateFormat.yMMMMd(formatLocale).add_Hms().format(this);
 
   /// 使用 DateFormat组合(Md + Hm) 的国际化格式格式化日期
   /// >>> May 1 12:30
   /// >>> 5月1日 12:30
-  String get MMMMd_Hm => DateFormat.MMMMd(currentLocale).add_Hm().format(this);
+  String get MMMMd_Hm => DateFormat.MMMMd(formatLocale).add_Hm().format(this);
 
   /// 使用 DateFormat组合(Md + Hms) 的国际化格式格式化日期
   /// >>> May 1 12:30:45
   /// >>> 5月1日 12:30:45
-  String get MMMMd_Hms => DateFormat.MMMMd(currentLocale).add_Hms().format(this);
+  String get MMMMd_Hms => DateFormat.MMMMd(formatLocale).add_Hms().format(this);
 
   /// 使用 DateFormat组合(yMd + Hms) 的国际化格式格式化日期
   /// >>> Thu, 5/1/2025 12:30:45
   /// >>> 2025/5/1周四 12:30:45
-  String get yMEd_Hms => DateFormat.yMEd(currentLocale).add_Hms().format(this);
+  String get yMEd_Hms => DateFormat.yMEd(formatLocale).add_Hms().format(this);
 
   /// 使用 DateFormat组合(yMd + Hms) 的国际化格式格式化日期
   /// >>> 5/1/2025 12:30
   /// >>> 2025/5/1 12:30
-  String get yMd_Hm => DateFormat.yMd(currentLocale).add_Hm().format(this);
+  String get yMd_Hm => DateFormat.yMd(formatLocale).add_Hm().format(this);
 
   /// 使用 DateFormat组合(yMd + Hms) 的国际化格式格式化日期
   /// >>> 5/1/2025 12:30:45
   /// >>> 2025/5/1 12:30:45
-  String get yMd_Hms => DateFormat.yMd(currentLocale).add_Hms().format(this);
+  String get yMd_Hms => DateFormat.yMd(formatLocale).add_Hms().format(this);
 
   /// 使用 DateFormat组合(Md + Hm) 的国际化格式格式化日期
   /// >>> 5/1 12:30
   /// >>> 5月1日 12:30
-  String get Md_Hm => DateFormat.Md(currentLocale).add_Hm().format(this);
+  String get Md_Hm => DateFormat.Md(formatLocale).add_Hm().format(this);
 
   /// 使用 DateFormat组合(Md + Hms) 的国际化格式格式化日期
   /// >>> 5/1 12:30:45
   /// >>> 5月1日 12:30:45
-  String get Md_Hms => DateFormat.Md(currentLocale).add_Hms().format(this);
+  String get Md_Hms => DateFormat.Md(formatLocale).add_Hms().format(this);
 
   /// 组合DateFormat的通用方法
   /// [pattern] 要使用的模式
@@ -417,7 +359,7 @@ extension FlexiDateTimeFormatterExt on DateTime {
     String? locale,
     String separator = ' ',
   }) {
-    final dateFormat = DateFormat(pattern, locale ?? currentLocale);
+    final dateFormat = DateFormat(pattern, locale ?? formatLocale);
     if (inputPattern == null) return dateFormat.format(this);
     return dateFormat.addPattern(inputPattern, separator).format(this);
   }
@@ -426,20 +368,6 @@ extension FlexiDateTimeFormatterExt on DateTime {
   /// 'yyyy-MM-dd' >>> 2025-05-01, 2025年5月1日
   /// 'yyyy-MM-dd HH:mm:ss' >>> 2025-05-01 12:30:45, 2025年5月1日 12:30:45
   String format(String pattern, [String? locale]) {
-    return DateFormat(pattern, locale ?? currentLocale).format(this);
+    return DateFormat(pattern, locale ?? formatLocale).format(this);
   }
 }
-
-/// 使用-分隔符的日期格式化
-const yyyyMMdd = 'yyyy-MM-dd';
-const yyyyMM = 'yyyy-MM';
-const MMdd = 'MM-dd';
-const MMddHHmm = 'MM-dd HH:mm';
-const MMddHHmmss = 'MM-dd HH:mm:ss';
-const yyyyMMDDHHmmss = 'yyyy-MM-dd HH:mm:ss';
-const yyyyMMDDHHmmssSSS = 'yyyy-MM-dd HH:mm:ss.SSS';
-
-const HHmm = 'HH:mm';
-const HHmmss = 'HH:mm:ss';
-const HHmmssSSS = 'HH:mm:ss.SSS';
-const mmssSSS = 'mm:ss.SSS';

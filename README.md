@@ -2,6 +2,7 @@
 
 [![Build Status](https://github.com/FlexiKline/flexi_formatter/actions/workflows/publish.yml/badge.svg)](https://github.com/FlexiKline/flexi_formatter/actions/workflows/publish.yml)
 
+[![pub package](https://img.shields.io/pub/v/flexi_formatter.svg)](https://pub.dev/packages/flexi_formatter)
 
 A flexible and customizable Dart/Flutter library for formatting numbers, dates, and other data types.
 

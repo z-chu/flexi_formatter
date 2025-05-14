@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:decimal/decimal.dart';
+part of 'formatter.dart';
 
 /// 默认小数点分隔符
 const defaultDecimalSeparator = '.';

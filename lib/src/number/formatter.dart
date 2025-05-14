@@ -14,10 +14,10 @@
 
 import 'package:decimal/decimal.dart';
 
-import 'constants.dart';
-import 'formatter_config.dart';
+import '../formatter_config.dart';
 
-part 'format_number_ext.dart';
+part 'constants.dart';
+part 'extension.dart';
 
 String formatNumber(
   Decimal? val, {

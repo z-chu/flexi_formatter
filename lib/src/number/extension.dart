@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of 'format_number_util.dart';
+part of 'formatter.dart';
 
-extension FlexiNumberFormatterStringExt on String {
+extension FlexiNumberFormatStringExt on String {
   Decimal? get d => Decimal.tryParse(this);
 
   String get ltr => lri;

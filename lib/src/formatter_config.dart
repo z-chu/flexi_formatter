@@ -15,12 +15,11 @@
 import 'package:decimal/decimal.dart';
 import 'package:intl/intl.dart';
 
-import 'constants.dart';
-import 'format_number_util.dart';
+import 'number/formatter.dart';
 
 abstract final class FlexiFormatter {
   static String? _currentLocale;
-  static String? get currentLocale => _currentLocale;
+  static String get currentLocale => _currentLocale ?? Intl.getCurrentLocale();
 
   /// 全局设置DataFormat的[locale]
   /// 注意: 调用前需要先调用[initializeDateFormatting]初始化Intl本地化库
@@ -37,7 +36,7 @@ abstract final class FlexiFormatter {
       return;
     }
 
-    _currentLocale = Intl.getCurrentLocale();
+    _currentLocale = null;
   }
 
   /// Global configuration for round mode, default null.

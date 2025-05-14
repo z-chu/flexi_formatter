@@ -12,6 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'src/constants.dart';
 export 'src/formatter_config.dart';
-export 'src/format_number_util.dart';
+export 'src/number/formatter.dart';
