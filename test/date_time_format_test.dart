@@ -64,76 +64,32 @@ void main() {
     });
   });
 
-  group('DateTimeExtensions Diff Tests', () {
-    final other = DateTime(2025, 4, 1, 12, 30, 45);
-    test('year 方法测试', () {
-      final result = testDate.diff(other, unit: TimeUnit.year);
-      print("year: $result");
-      expect(result, isA<num>());
-    });
-    test('month 方法测试', () {
-      final result = testDate.diff(other, unit: TimeUnit.month);
-      print("month: $result");
-      expect(result, isA<num>());
-    });
-    test('week 方法测试', () {
-      final result = testDate.diff(other, unit: TimeUnit.week);
-      print("week: $result");
-      expect(result, isA<num>());
-    });
-    test('day 方法测试', () {
-      final result = testDate.diff(other, unit: TimeUnit.day);
-      print("day: $result");
-      expect(result, isA<num>());
-    });
-    test('hour 方法测试', () {
-      final result = testDate.diff(other, unit: TimeUnit.hour);
-      print("hour: $result");
-      expect(result, isA<num>());
-    });
-    test('minute 方法测试', () {
-      final result = testDate.diff(other, unit: TimeUnit.minute);
-      print("minute: $result");
-      expect(result, isA<num>());
-    });
-    test('second 方法测试', () {
-      final result = testDate.diff(other, unit: TimeUnit.second);
-      print("second: $result");
-      expect(result, isA<num>());
-    });
-    test('millisecond 方法测试', () {
-      final result = testDate.diff(other, unit: TimeUnit.millisecond);
-      print("millisecond: $result");
-      expect(result, isA<num>());
-    });
-    test('microsecond 方法测试', () {
-      final result = testDate.diff(other, unit: TimeUnit.microsecond);
-      print("microsecond: $result");
-      expect(result, isA<num>());
-    });
-  });
-
-  group('DateTimeExtensions DiffToString Tests', () {
-    test('diffToString day', () {
-      final result = testDate.countdownTo(DateTime(2025, 4, 29, 17, 20, 30));
+  group('DateTimeFormatterExt diffAsCountdown Tests', () {
+    test('diffAsCountdown month', () {
+      final result = testDate.diffAsCountdown(DateTime(2025, 6, 1, 13, 35, 50));
       print("diffToString day: $result");
-      expect(result, '1D 19H');
+      expect(result, '31D:01H');
+    });
+    test('diffAsCountdown day', () {
+      final result = testDate.diffAsCountdown(DateTime(2025, 4, 29, 17, 20, 30));
+      print("diffToString day: $result");
+      expect(result, '1D:19H');
     });
 
-    test('diffToString hour', () {
-      final result = testDate.countdownTo(DateTime(2025, 5, 1, 17, 35, 45), true);
+    test('diffAsCountdown hour', () {
+      final result = testDate.diffAsCountdown(DateTime(2025, 5, 1, 17, 35, 55, 125), true);
       print("diffToString hour: $result");
-      expect(result, '-05:05');
+      expect(result, '-05:05:10');
     });
 
-    test('diffToString minute', () {
-      final result = testDate.countdownTo(DateTime(2025, 5, 1, 12, 40, 35));
+    test('diffAsCountdown minute', () {
+      final result = testDate.diffAsCountdown(DateTime(2025, 5, 1, 12, 40, 54, 125));
       print("diffToString minute: $result");
-      expect(result, '09:50');
+      expect(result, '10:09');
     });
   });
 
-  group('DateTimeExtensions formatByUnit ', () {
+  group('DateTimeFormatterExt formatByUnit ', () {
     setUp(() {
       FlexiFormatter.setCurrentLocale('zh-CN');
     });
@@ -159,7 +115,7 @@ void main() {
     });
   });
 
-  group('DateTimeExtensions Format Tests', () {
+  group('DateTimeFormatterExt Format Tests', () {
     test('d 方法测试', () {
       final result = testDate.d;
       print("d: $result");
@@ -383,7 +339,7 @@ void main() {
     });
   });
 
-  group('DateTime combine Tests', () {
+  group('DateTimeFormatterExt combine Tests', () {
     test('yMMMMEEEEd_jms 方法测试', () {
       final result = testDate.yMMMMEEEEd_jms;
       print("yMMMMEEEEd_jms: $result");
@@ -432,7 +388,7 @@ void main() {
     });
   });
 
-  group('DateTime.format(patten?, locale?) Tests', () {
+  group('DateTimeFormatterExt format(patten?, locale?) Tests', () {
     test('combineFormat 方法测试', () {
       final result = testDate.combineFormat(
         DateFormat.YEAR_ABBR_QUARTER,

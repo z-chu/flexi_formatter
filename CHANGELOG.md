@@ -1,3 +1,6 @@
+## 1.6.3
+- Optimize code.
+
 ## 1.6.2
 - Add extension for date operations
 - Adapt to the intl library

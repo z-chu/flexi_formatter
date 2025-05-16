@@ -36,12 +36,9 @@ extension FlexiDateTimeFormatterIntExt on int {
 /// 日期时间扩展
 /// 测试日期: DateTime(2025, 5, 1, 12, 30, 45);
 extension FlexiDateTimeFormatterExt on DateTime {
-  /// 计算当前时间到[other]的时间差, 并格式化展示
-  /// 主要用于倒计时展示
-  /// >= 1Day: 1D 12H
-  /// >= 1Hour: 12:30
-  /// else 30:45
-  String countdownTo([DateTime? other, bool showSign = false]) {
+  /// 计算当前时间到指定时间的差值作为倒计时展示
+  /// if the [other] is not specified, it will use DateTime.now() as the other time.
+  String diffAsCountdown([DateTime? other, showSign = false]) {
     other ??= DateTime.now();
     final diff = difference(other);
     var microseconds = diff.inMicroseconds;
@@ -52,20 +49,22 @@ extension FlexiDateTimeFormatterExt on DateTime {
       if (showSign) sign = "-";
     }
 
-    if (microseconds >= TimeUnit.day.microseconds) {
-      final days = microseconds ~/ TimeUnit.day.microseconds;
-      microseconds = microseconds.remainder(TimeUnit.day.microseconds);
-      final hours = (microseconds % TimeUnit.day.microseconds) ~/ TimeUnit.hour.microseconds;
-      return '$sign${days}D ${hours.twoDigits}H';
-    } else if (microseconds >= TimeUnit.hour.microseconds) {
-      final hours = microseconds ~/ TimeUnit.hour.microseconds;
-      microseconds = microseconds.remainder(TimeUnit.hour.microseconds);
-      final minutes = (microseconds % TimeUnit.hour.microseconds) ~/ TimeUnit.minute.microseconds;
-      return '$sign${hours.twoDigits}:${minutes.twoDigits}';
+    if (microseconds >= Duration.microsecondsPerDay) {
+      final days = microseconds ~/ Duration.microsecondsPerDay;
+      microseconds = microseconds.remainder(Duration.microsecondsPerDay);
+      final hours = microseconds ~/ Duration.microsecondsPerHour;
+      return '$sign${days}D:${hours.twoDigits}H';
+    } else if (microseconds >= Duration.microsecondsPerHour) {
+      final hours = microseconds ~/ Duration.microsecondsPerHour;
+      microseconds = microseconds.remainder(Duration.microsecondsPerHour);
+      final minutes = microseconds ~/ Duration.microsecondsPerMinute;
+      microseconds = microseconds.remainder(Duration.microsecondsPerMinute);
+      final seconds = microseconds ~/ Duration.microsecondsPerSecond;
+      return '$sign${hours.twoDigits}:${minutes.twoDigits}:${seconds.twoDigits}';
     } else {
-      final minutes = microseconds ~/ TimeUnit.minute.microseconds;
-      microseconds = microseconds.remainder(TimeUnit.minute.microseconds);
-      final seconds = (microseconds % TimeUnit.minute.microseconds) ~/ TimeUnit.second.microseconds;
+      final minutes = microseconds ~/ Duration.microsecondsPerMinute;
+      microseconds = microseconds.remainder(Duration.microsecondsPerMinute);
+      final seconds = microseconds ~/ Duration.microsecondsPerSecond;
       return '$sign${minutes.twoDigits}:${seconds.twoDigits}';
     }
   }
