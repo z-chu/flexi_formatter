@@ -276,4 +276,60 @@ void main() {
     print(result);
     expect(result, '1.e+22');
   });
+
+  test('test precentSignFirst', () {
+    print('=====precentSignFirst=====');
+    var result = formatPercentage(
+      0.1.d,
+      precision: 2,
+      cutInvalidZero: true,
+    );
+    print(result);
+    expect(result, "10%");
+
+    result = formatPercentage(
+      0.1.d,
+      precision: 2,
+      cutInvalidZero: true,
+      percentSignFirst: true,
+    );
+    print(result);
+    expect(result, "%10");
+
+    try {
+      FlexiFormatter.setGlobalConfig(percentSignFirst: true);
+      result = formatPercentage(
+        0.1.d,
+        precision: 2,
+        cutInvalidZero: true,
+        prefix: 'Current: ',
+        suffix: '%',
+      );
+      print(result);
+      expect(result, "Current: %10");
+    } finally {
+      FlexiFormatter.restoreGlobalConfig();
+    }
+
+    result = formatPercentage(
+      0.1.d,
+      precision: 2,
+      cutInvalidZero: true,
+      prefix: 'Current: %',
+      suffix: ' count',
+    );
+    print(result);
+    expect(result, "Current: 10% count");
+
+    result = formatPercentage(
+      0.1.d,
+      precision: 2,
+      cutInvalidZero: true,
+      percentSignFirst: true,
+      prefix: 'Current: ',
+      suffix: '% count',
+    );
+    print(result);
+    expect(result, "Current: %10 count");
+  });
 }

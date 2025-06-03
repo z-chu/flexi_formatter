@@ -100,10 +100,22 @@ String formatPercentage(
   RoundMode roundMode = RoundMode.truncate,
   bool cutInvalidZero = false,
   ExplicitDirection? direction,
-  String prefix = '',
-  String suffix = '%',
+  bool? percentSignFirst,
+  String? prefix,
+  String? suffix,
   String defIfNull = '--', // 如果为空或无效值时的默认展示.
 }) {
+  percentSignFirst ??= FlexiFormatter.percentSignFirst;
+  if (percentSignFirst) {
+    prefix ??= defaultPrecentSign;
+    prefix = prefix.contains(defaultPrecentSign) ? prefix : '$prefix$defaultPrecentSign';
+    suffix = suffix != null ? suffix.replaceAll(defaultPrecentSign, '') : '';
+  } else {
+    prefix = prefix != null ? prefix.replaceAll(defaultPrecentSign, '') : '';
+    suffix ??= defaultPrecentSign;
+    suffix = suffix.contains(defaultPrecentSign) ? suffix : '$defaultPrecentSign$suffix';
+  }
+
   return formatNumber(
     val == null ? null : (expandHundred ? val * hundred : val),
     precision: precision,

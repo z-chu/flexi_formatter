@@ -14,6 +14,9 @@
 
 part of 'formatter.dart';
 
+/// 默认百分比符号
+const defaultPrecentSign = '%';
+
 /// 默认小数点分隔符
 const defaultDecimalSeparator = '.';
 

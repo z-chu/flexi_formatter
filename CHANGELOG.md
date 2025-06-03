@@ -1,3 +1,6 @@
+## 1.6.5
+- Support for precentage sign display configuration.
+
 ## 1.6.4
 - bugfix.
 

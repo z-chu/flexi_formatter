@@ -39,6 +39,10 @@ abstract final class FlexiFormatter {
     _currentLocale = null;
   }
 
+  /// Global configuration for whether the percentage sign is displayed first, default false.
+  static bool _percentSignFirst = false;
+  static bool get percentSignFirst => _percentSignFirst;
+
   /// Global configuration for round mode, default null.
   static RoundMode? _globalRoundMode;
   static RoundMode? get globalRoundMode => _globalRoundMode;
@@ -81,6 +85,7 @@ abstract final class FlexiFormatter {
 
   /// Restore the global default configuration
   static void restoreGlobalConfig() {
+    _percentSignFirst = false;
     _globalRoundMode = null;
     _globalExplicitDirection = null;
     _globalShrinkZeroMode = null;
@@ -97,6 +102,7 @@ abstract final class FlexiFormatter {
   static FlexiFormatter get setGlobalConfig => const _$FlexiFormatterConfigurator();
 
   void call({
+    bool percentSignFirst,
     RoundMode? roundMode,
     ExplicitDirection? direction,
     ShrinkZeroMode? shrikMode,
@@ -115,6 +121,7 @@ final class _$FlexiFormatterConfigurator implements FlexiFormatter {
 
   @override
   void call({
+    Object? percentSignFirst = _placeHolder,
     Object? roundMode = _placeHolder,
     Object? direction = _placeHolder,
     Object? shrikMode = _placeHolder,
@@ -126,6 +133,10 @@ final class _$FlexiFormatterConfigurator implements FlexiFormatter {
     Object? exponentMinDecimal = _placeHolder,
     Object? exponentMaxDecimal = _placeHolder,
   }) {
+    if (percentSignFirst != _placeHolder && percentSignFirst is bool) {
+      FlexiFormatter._percentSignFirst = percentSignFirst;
+    }
+
     if (roundMode != _placeHolder && (roundMode == null || roundMode is RoundMode)) {
       FlexiFormatter._globalRoundMode = roundMode as RoundMode?;
     }
