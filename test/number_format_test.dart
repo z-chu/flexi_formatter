@@ -215,6 +215,17 @@ void main() {
       );
       print(result);
       expect(result, "￥+1.2345.6789,0₆78元");
+
+      FlexiFormatter.setGlobalConfig(decimalSeparator: ',', groupSeparator: '.', groupCounts: 3);
+      result = formatPrice(
+        '123456789.000000789'.d,
+        precision: 8,
+        showSign: true,
+        prefix: '￥',
+        suffix: '元',
+      );
+      print(result);
+      expect(result, "￥+123.456.789,00000078元");
     } finally {
       FlexiFormatter.restoreGlobalConfig();
     }

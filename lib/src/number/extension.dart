@@ -322,7 +322,7 @@ extension on String {
 
     // 如果未指定[shrinkMode] 或 指定了自定义模式, 但[shrinkConverter]未指定, 则无需进行零收缩
     if (shrinkMode == null || (shrinkMode == ShrinkZeroMode.custom && shrinkConverter == null)) {
-      if (decimalSeparator.isEmpty && decimalSeparator != defaultDecimalSeparator) {
+      if (decimalSeparator.isNotEmpty && decimalSeparator != defaultDecimalSeparator) {
         return '${substring(0, dotIndex)}$decimalSeparator${substring(dotIndex + 1)}';
       }
       return this;
