@@ -20,21 +20,22 @@ print(formatNumber(
   shrinkZeroMode: ShrinkZeroMode.curlyBraces,
 ));
 
-/// 0.1 => '10.00%'
+/// 0.1 => '10.0%'
 print(formatPercentage(0.1.d));
 
 /// 1234567890.12345 => '$1,234,567,890.12'
 print(formatPrice(1234567890.12345.d, precision: 2, prefix: '\$'));
 
 /// 9876543210.1 => '9.88B'
-print(formatAmount(9876543210.1.d));
+print(formatAmount(9876543210.1.d, precision: 2));
 
 /// 9876543210.1 => '9.87B'
-print(formatAmount(9876543210.1.d, roundMode: RoundMode.truncate));
+print(formatAmount(9876543210.1.d, precision: 2, roundMode: RoundMode.truncate));
 
 /// 9876543210.1 => '98.77亿'
 print(formatAmount(
   9876543210.1.d,
+  precision: 2,
   compactConverter: simplifiedChineseCompactConverter,
 ));
 

@@ -21,7 +21,7 @@ part 'extension.dart';
 
 String formatNumber(
   Decimal? val, {
-  int precision = 0, // 精度
+  int? precision, // 精度, 如果为null, 则使用原始数据的精度
   bool showSign = false, // 是否展示符号位+
   RoundMode? roundMode,
   bool cutInvalidZero = false, // 删除尾部零
@@ -47,6 +47,8 @@ String formatNumber(
   if (val == Decimal.zero && defIfZero != null) {
     return '$prefix$defIfZero$suffix'.applyExplicitBidiFormatting(direction);
   }
+
+  precision ??= val.scale;
 
   if (showSign && val >= Decimal.zero) prefix += '+';
 
@@ -95,24 +97,22 @@ String formatNumber(
 String formatPercentage(
   Decimal? val, {
   bool expandHundred = true,
-  int precision = 2,
+  int? precision,
   bool showSign = false,
   RoundMode roundMode = RoundMode.truncate,
   bool cutInvalidZero = false,
   ExplicitDirection? direction,
   bool? percentSignFirst,
-  String? prefix,
-  String? suffix,
+  String prefix = '',
+  String suffix = '',
   String defIfNull = '--', // 如果为空或无效值时的默认展示.
 }) {
   percentSignFirst ??= FlexiFormatter.percentSignFirst;
   if (percentSignFirst) {
-    prefix ??= defaultPrecentSign;
     prefix = prefix.contains(defaultPrecentSign) ? prefix : '$prefix$defaultPrecentSign';
-    suffix = suffix != null ? suffix.replaceAll(defaultPrecentSign, '') : '';
+    suffix = suffix.isNotEmpty ? suffix.replaceAll(defaultPrecentSign, '') : '';
   } else {
-    prefix = prefix != null ? prefix.replaceAll(defaultPrecentSign, '') : '';
-    suffix ??= defaultPrecentSign;
+    prefix = prefix.isNotEmpty ? prefix.replaceAll(defaultPrecentSign, '') : '';
     suffix = suffix.contains(defaultPrecentSign) ? suffix : '$defaultPrecentSign$suffix';
   }
 
@@ -132,7 +132,7 @@ String formatPercentage(
 /// 格式化价钱
 String formatPrice(
   Decimal? val, {
-  int precision = 2,
+  int? precision,
   bool showSign = false,
   RoundMode roundMode = RoundMode.truncate,
   bool cutInvalidZero = true,
@@ -165,7 +165,7 @@ String formatPrice(
 /// 格式化数量
 String formatAmount(
   Decimal? val, {
-  int precision = 2,
+  int? precision,
   bool showSign = false,
   RoundMode? roundMode,
   bool enableCompact = true,

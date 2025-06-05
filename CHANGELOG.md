@@ -1,3 +1,7 @@
+## 1.6.6
+- Date formatting supports to useSystemLocale
+- Number formatting precision defaults to the original data precision.
+
 ## 1.6.5
 - Support for precentage sign display configuration.
 

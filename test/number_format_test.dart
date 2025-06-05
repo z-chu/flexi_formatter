@@ -114,7 +114,7 @@ void main() {
   test('test formatPercentage', () {
     print('=====formatPercentage=====');
 
-    var result = formatPercentage(0.1.d, cutInvalidZero: false);
+    var result = formatPercentage(0.1.d, precision: 2, cutInvalidZero: false);
     print(result);
     expect(result, "10.00%");
 
@@ -122,13 +122,13 @@ void main() {
     print(result);
     expect(result, "10%");
 
-    result = formatPercentage(0.98765.d, cutInvalidZero: false);
+    result = formatPercentage(0.98765.d, precision: 2, cutInvalidZero: false);
     print(result);
     expect(result, "98.76%");
 
     result = formatPercentage(0.98765.d, cutInvalidZero: true);
     print(result);
-    expect(result, "98.76%");
+    expect(result, "98.765%");
   });
 
   test('test formatPrice', () {
