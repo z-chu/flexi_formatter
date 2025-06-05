@@ -348,7 +348,9 @@ extension FlexiDateTimeFormatterExt on DateTime {
   /// 组合DateFormat的通用方法
   /// [pattern] 要使用的模式
   /// [inputPattern] 要组合的模式
+  /// [locale] 语言环境，默认由[FlexiFormatter]配置中的[currentLocale]指定.
   /// [separator] 分隔符，默认为空字符串
+  /// [useSystemLocale] 是否使用系统语言环境(en_US)，默认为false
   /// 例如: combineFormat('yQQQ', 'MMMd')
   /// >>> Q2 2025 May 1
   /// >>> 2025年第2季度 5月1日
@@ -357,16 +359,30 @@ extension FlexiDateTimeFormatterExt on DateTime {
     String? inputPattern, {
     String? locale,
     String separator = ' ',
+    bool useSystemLocale = false,
   }) {
-    final dateFormat = DateFormat(pattern, locale ?? formatLocale);
+    final dateFormat = DateFormat(
+      pattern,
+      useSystemLocale ? Intl.systemLocale : locale ?? formatLocale,
+    );
     if (inputPattern == null) return dateFormat.format(this);
     return dateFormat.addPattern(inputPattern, separator).format(this);
   }
 
   /// 使用指定模式的国际化格式格式化日期
+  /// [pattern] 要使用的模式
+  /// [locale] 语言环境，默认由[FlexiFormatter]配置中的[currentLocale]指定.
+  /// [useSystemLocale] 是否使用系统语言环境(en_US)，默认为false
   /// 'yyyy-MM-dd' >>> 2025-05-01, 2025年5月1日
   /// 'yyyy-MM-dd HH:mm:ss' >>> 2025-05-01 12:30:45, 2025年5月1日 12:30:45
-  String format(String pattern, [String? locale]) {
-    return DateFormat(pattern, locale ?? formatLocale).format(this);
+  String format(
+    String pattern, {
+    String? locale,
+    bool useSystemLocale = false,
+  }) {
+    return DateFormat(
+      pattern,
+      useSystemLocale ? Intl.systemLocale : locale ?? formatLocale,
+    ).format(this);
   }
 }

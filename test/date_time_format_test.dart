@@ -410,4 +410,24 @@ void main() {
       expect(result, '2025-05-01 12:30:45');
     });
   });
+
+  group('DateTimeFormat useSystem', () {
+    test('useSystem(false) 方法测试', () {
+      FlexiFormatter.setCurrentLocale('zh-CN');
+      var result = testDate.format(yyyyMMDDHHmmss, useSystemLocale: false);
+      print("useSystem(false): $result");
+      FlexiFormatter.setCurrentLocale('ar-SA');
+      result = testDate.format(yyyyMMDDHHmmss, useSystemLocale: false);
+      print("useSystem(false): $result");
+    });
+
+    test('useSystem(true) 方法测试', () {
+      FlexiFormatter.setCurrentLocale('zh-CN');
+      var result = testDate.format(yyyyMMDDHHmmss, useSystemLocale: true);
+      print("useSystem(false): $result");
+      FlexiFormatter.setCurrentLocale('ar-SA');
+      result = testDate.format(yyyyMMDDHHmmss, useSystemLocale: true);
+      print("useSystem(false): $result");
+    });
+  });
 }
