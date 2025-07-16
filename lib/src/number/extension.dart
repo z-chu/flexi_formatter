@@ -90,7 +90,7 @@ extension FlexiNumberFormatterIntExt on int {
 
 extension FlexiNumberFormatterDecimalExt on Decimal {
   Decimal get half => (this / two).toDecimal(
-        scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+        scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
       );
 
   Decimal divNum(num num) {
@@ -103,7 +103,7 @@ extension FlexiNumberFormatterDecimalExt on Decimal {
   Decimal div(Decimal other) {
     assert(other != Decimal.zero, 'divisor cannot be zero');
     return (this / other).toDecimal(
-      scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+      scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
     );
   }
 
@@ -187,28 +187,28 @@ extension on Decimal {
     if (val >= trillion) {
       return (
         (this / trillion).toDecimal(
-          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+          scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
         ),
         'T',
       );
     } else if (val >= billion) {
       return (
         (this / billion).toDecimal(
-          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+          scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
         ),
         'B',
       );
     } else if (val >= million) {
       return (
         (this / million).toDecimal(
-          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+          scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
         ),
         'M',
       );
     } else if (val >= thousand) {
       return (
         (this / thousand).toDecimal(
-          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+          scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
         ),
         'K',
       );
@@ -222,21 +222,21 @@ extension on Decimal {
     if (val > trillion) {
       return (
         (this / trillion).toDecimal(
-          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+          scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
         ),
         '兆',
       );
     } else if (val > hundredMillion) {
       return (
         (this / hundredMillion).toDecimal(
-          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+          scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
         ),
         '亿',
       );
     } else if (val > tenThousand) {
       return (
         (this / tenThousand).toDecimal(
-          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+          scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
         ),
         '万',
       );
@@ -250,21 +250,21 @@ extension on Decimal {
     if (val > trillion) {
       return (
         (this / trillion).toDecimal(
-          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+          scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
         ),
         '兆',
       );
     } else if (val > hundredMillion) {
       return (
         (this / hundredMillion).toDecimal(
-          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+          scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
         ),
         '億',
       );
     } else if (val > tenThousand) {
       return (
         (this / tenThousand).toDecimal(
-          scaleOnInfinitePrecision: defaultScaleOnInfinitePrecision,
+          scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
         ),
         '萬',
       );

@@ -39,6 +39,10 @@ abstract final class FlexiFormatter {
     _currentLocale = null;
   }
 
+  /// Global configuration for scale on infinite precision, default [defaultScaleOnInfinitePrecision].
+  static int _scaleOnInfinitePrecision = defaultScaleOnInfinitePrecision;
+  static int get scaleOnInfinitePrecision => _scaleOnInfinitePrecision;
+
   /// Global configuration for whether the percentage sign is displayed first, default false.
   static bool _percentSignFirst = false;
   static bool get percentSignFirst => _percentSignFirst;
@@ -76,11 +80,11 @@ abstract final class FlexiFormatter {
   static CompactConverter get globalCompactConverter => _globalCompactConverter;
 
   /// Global configuration for displayed as the minimum boundary value of the exponent.
-  static Decimal _exponentMinDecimal = Decimal.ten.pow(-15).toDecimal();
+  static Decimal _exponentMinDecimal = defaultExponentMinDecimal;
   static Decimal get exponentMinDecimal => _exponentMinDecimal;
 
   /// Global configuration for displayed as the maximum boundary value of the exponent
-  static Decimal _exponentMaxDecimal = Decimal.ten.pow(21).toDecimal();
+  static Decimal _exponentMaxDecimal = defaultExponentMaxDecimal;
   static Decimal get exponentMaxDecimal => _exponentMaxDecimal;
 
   /// Restore the global default configuration
@@ -96,6 +100,7 @@ abstract final class FlexiFormatter {
     _globalCompactConverter = thousandCompactConverter;
     _exponentMinDecimal = defaultExponentMinDecimal;
     _exponentMaxDecimal = defaultExponentMaxDecimal;
+    _scaleOnInfinitePrecision = defaultScaleOnInfinitePrecision;
   }
 
   /// Configure global settings
@@ -113,6 +118,7 @@ abstract final class FlexiFormatter {
     ShrinkZeroConverter? shrinkZeroConverter,
     Decimal exponentMinDecimal,
     Decimal exponentMaxDecimal,
+    int scaleOnInfinitePrecision,
   });
 }
 
@@ -132,6 +138,7 @@ final class _$FlexiFormatterConfigurator implements FlexiFormatter {
     Object? shrinkZeroConverter = _placeHolder,
     Object? exponentMinDecimal = _placeHolder,
     Object? exponentMaxDecimal = _placeHolder,
+    Object? scaleOnInfinitePrecision = _placeHolder,
   }) {
     if (percentSignFirst != _placeHolder && percentSignFirst is bool) {
       FlexiFormatter._percentSignFirst = percentSignFirst;
@@ -176,12 +183,19 @@ final class _$FlexiFormatterConfigurator implements FlexiFormatter {
         exponentMinDecimal is Decimal &&
         exponentMinDecimal < defaultExponentMinDecimal) {
       FlexiFormatter._exponentMinDecimal = exponentMinDecimal;
+      FlexiFormatter._scaleOnInfinitePrecision = exponentMinDecimal.scale;
     }
 
     if (exponentMaxDecimal != _placeHolder &&
         exponentMaxDecimal is Decimal &&
         exponentMaxDecimal > defaultExponentMaxDecimal) {
       FlexiFormatter._exponentMaxDecimal = exponentMaxDecimal;
+    }
+
+    if (scaleOnInfinitePrecision != _placeHolder &&
+        scaleOnInfinitePrecision is int &&
+        scaleOnInfinitePrecision > defaultExponentMinDecimal.scale) {
+      FlexiFormatter._scaleOnInfinitePrecision = scaleOnInfinitePrecision;
     }
   }
 }

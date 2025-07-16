@@ -253,8 +253,8 @@ void main() {
     expect(result, "￥+123,456,789.0<₆>78元");
   });
 
-  test('test minimum and maximum', () {
-    print('=====minimum and maximum=====');
+  test('test format exceeding the exponent limit value', () {
+    print('=====exceeding the exponent limit value=====');
     final minimum = Decimal.ten.pow(-16).toDecimal();
 
     var result = formatNumber(
@@ -275,6 +275,41 @@ void main() {
     );
     print(result);
     expect(result, '1.e+22');
+  });
+
+  test('test setting exponent limit and scaleOnInfinitePrecision', () {
+    print('=====setting exponent limit and scaleOnInfinitePrecision=====');
+    try {
+      FlexiFormatter.setGlobalConfig(
+        exponentMinDecimal: Decimal.ten.pow(-35).toDecimal(),
+        exponentMaxDecimal: Decimal.ten.pow(30).toDecimal(),
+        scaleOnInfinitePrecision: 35,
+      );
+
+      final dividend = Decimal.fromInt(10).pow(35).toDecimal();
+      var value = (23237.84.d / dividend).toDecimal(
+        scaleOnInfinitePrecision: FlexiFormatter.scaleOnInfinitePrecision,
+      );
+      var result = formatNumber(
+        value,
+        shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+        cutInvalidZero: true,
+      );
+      print(result);
+      expect(result, '0.0{30}2323784');
+
+      result = formatNumber(
+        value,
+        precision: 35,
+        roundMode: RoundMode.floor,
+        shrinkZeroMode: ShrinkZeroMode.curlyBraces,
+        cutInvalidZero: true,
+      );
+      print(result);
+      expect(result, '0.0{30}23237');
+    } finally {
+      FlexiFormatter.restoreGlobalConfig();
+    }
   });
 
   test('test precentSignFirst', () {

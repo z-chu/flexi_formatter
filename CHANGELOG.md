@@ -1,3 +1,7 @@
+## 1.7.0
+- Add Global Config for scaleOnInfinitePrecision.
+- Optimize division operation of Decimal
+
 ## 1.6.6
 - Date formatting supports to useSystemLocale
 - Number formatting precision defaults to the original data precision.

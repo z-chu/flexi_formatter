@@ -43,7 +43,7 @@ const subscriptNumerals = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇
 const subscriptPositive = '₊';
 const subscriptNegative = '₋';
 
-/// 默认Decimal除法精度
+/// 无限精度Decimal的除法精度
 const int defaultScaleOnInfinitePrecision = 17;
 
 typedef CompactConverter = (Decimal, String) Function(Decimal value);
