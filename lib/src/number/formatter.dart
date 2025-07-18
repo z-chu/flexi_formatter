@@ -101,10 +101,12 @@ String formatPercentage(
   bool showSign = false,
   RoundMode roundMode = RoundMode.truncate,
   bool cutInvalidZero = false,
+  bool enableGrouping = true,
   ExplicitDirection? direction,
   bool? percentSignFirst,
   String prefix = '',
   String suffix = '',
+  String? defIfZero, // 如果为0时的默认展示
   String defIfNull = '--', // 如果为空或无效值时的默认展示.
 }) {
   percentSignFirst ??= FlexiFormatter.percentSignFirst;
@@ -122,9 +124,11 @@ String formatPercentage(
     showSign: showSign,
     roundMode: roundMode,
     cutInvalidZero: cutInvalidZero,
+    enableGrouping: enableGrouping,
     direction: direction,
     prefix: prefix,
     suffix: suffix,
+    defIfZero: defIfZero,
     defIfNull: defIfNull,
   );
 }

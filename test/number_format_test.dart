@@ -129,6 +129,10 @@ void main() {
     result = formatPercentage(0.98765.d, cutInvalidZero: true);
     print(result);
     expect(result, "98.765%");
+
+    result = formatPercentage(10.56.d, cutInvalidZero: true);
+    print(result);
+    expect(result, "1,056%");
   });
 
   test('test formatPrice', () {

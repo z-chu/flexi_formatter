@@ -1,3 +1,6 @@
+## 1.7.1
+- Support grouping for formatPercentage
+
 ## 1.7.0
 - Add Global Config for scaleOnInfinitePrecision.
 - Optimize division operation of Decimal
